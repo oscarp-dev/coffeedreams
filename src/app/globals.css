@@ -9,6 +9,7 @@
 * { box-sizing: border-box; }
 html { overflow-x: hidden; }
 main { overflow-x: hidden; }
+.stat-icon + p + p, main > section:nth-child(5) p.mt-2 { font-size: 10px; }
 
 body {
   background: var(--cream); color: var(--ink); font-family: var(--font-montserrat), sans-serif; overflow-x: hidden;
@@ -33,4 +34,8 @@ body {
 @media (max-width: 1023px) {
   header nav a, header nav button { min-height: 44px; display: flex; align-items: center; }
   #newsletter, #newsletter + button { min-height: 44px; }
+}
+@media (max-width: 639px) {
+  main > section:first-child > div > div:first-child { background-image: linear-gradient(to bottom, rgb(247 245 240 / .98), rgb(247 245 240 / .88) 58%, rgb(247 245 240 / .48)); }
+  .stat-icon + p + p, main > section:nth-child(5) p.mt-2 { font-size: 10px; }
 }
