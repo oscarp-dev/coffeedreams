@@ -29,7 +29,14 @@ body {
 .steam-divider { height: 32px; margin-top: -1px; background: var(--cream); clip-path: ellipse(58% 55% at 50% 100%); }
 ::selection { background: var(--terracotta); color: var(--cream); }
 @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
-.rise-in { animation: rise .8s ease-out both; } .rise-delay-1 { animation-delay: .12s; } .rise-delay-2 { animation-delay: .24s; }
+.rise-in { animation: rise .8s ease-out both; } .rise-delay-1 { animation-delay: .12s; } .rise-delay-2 { animation-delay: .24s; } .rise-delay-3 { animation-delay: .36s; }
+@keyframes marquee-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.marquee-track { animation: marquee-scroll linear infinite; }
+.marquee-mask:hover .marquee-track { animation-play-state: paused; }
+.marquee-mask { -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent); mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent); }
+.magnetic-btn { position: relative; overflow: hidden; isolation: isolate; }
+.magnetic-btn::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%); transform: translateX(-120%); transition: transform .7s ease; }
+.magnetic-btn:hover::before { transform: translateX(120%); }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; } }
 @media (max-width: 1023px) {
   header nav a, header nav button { min-height: 44px; display: flex; align-items: center; }
