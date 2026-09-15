@@ -60,13 +60,14 @@ function Process() {
 
 function Projects() { return <section className="grain bg-ink px-6 py-20 text-cream lg:px-10"><div className="mx-auto grid max-w-[1320px] gap-10 lg:grid-cols-[.95fr_1.05fr]"><div className="min-h-[420px] overflow-hidden rounded-[20px]"><RevealImage src="/images/idea.jpg" className="h-full min-h-[420px] transition-transform duration-700 hover:scale-105" /></div><Reveal index={1} className="flex flex-col justify-center"><p className="eyebrow text-sand">Proyectos que inspiran</p><h2 className="display mt-4 max-w-[510px] text-5xl leading-[1.05]">Ideas que se convierten <span className="text-sand">en experiencias.</span></h2><p className="mt-6 max-w-[460px] text-sm leading-7 text-cream/65">Desde el concepto hasta la última taza, hacemos que cada detalle cuente. Una mirada estratégica con sensibilidad por lo que hace especial a un lugar.</p><Link href="/proyectos" className="group mt-8 flex w-fit items-center gap-3 text-[10px] font-semibold uppercase tracking-[.13em] text-sand">Ver proyectos <ArrowRight size={15} className="transition-transform duration-300 group-hover:translate-x-1" /></Link><div className="mt-12 grid grid-cols-3 gap-3">{[["Diseño y apertura", "/images/proyecto-diseno-apertura.jpg"], ["Análisis y optimización", "/images/proyecto-analisis-optimizacion.jpg"], ["Formación", "/images/latteart.jpg"]].map(([label, image], i) => <div key={label} className="group"><div className="aspect-square overflow-hidden rounded-lg"><RevealImage src={image} index={i + 2} className="h-full w-full transition-transform duration-500 group-hover:scale-110" /></div><p className="mt-2 text-[9px] uppercase leading-4 tracking-[.08em] text-sand">{label}</p></div>)}</div></Reveal></div></section>; }
 
-const trustLogos = [
-  <span key="1" className="display px-10 text-xl text-olive/80">CAFÉ NORTE</span>,
-  <span key="2" className="px-10 text-xl font-semibold tracking-[.14em] text-olive/80">MAMBÚ</span>,
-  <span key="3" className="display px-10 text-xl font-semibold text-olive/80">TEMPO</span>,
-  <span key="4" className="px-10 text-xl font-semibold tracking-[.14em] text-olive/80">QAPHI</span>,
-  <span key="5" className="display px-10 text-xl font-semibold text-olive/80">HONEY</span>,
+const trustBrands = [
+  { name: "Fini Coffee & Bakery", src: "/images/trust/fini.png", h: "h-12 sm:h-14" },
+  { name: "Latte Art by Barista Richy", src: "/images/trust/latte-art.png", h: "h-12 sm:h-14" },
+  { name: "Honey Coffee & Brunch", src: "/images/trust/honey.png", h: "h-10 sm:h-11" },
+  { name: "Qaphi Coffee | Brunch | Sweet", src: "/images/trust/qaphi.png", h: "h-9 sm:h-10" },
+  { name: "Harry's Coffee & Brunch", src: "/images/trust/harrys.png", h: "h-9 sm:h-10" },
 ];
+const trustLogos = trustBrands.map(({ name, src, h }) => <img key={name} src={src} alt={name} className={`mix-blend-multiply w-auto shrink-0 object-contain px-10 opacity-60 grayscale transition duration-300 hover:opacity-100 hover:grayscale-0 ${h}`} />);
 
 function Trust() { return <section className="bg-cream py-12"><div className="mx-auto max-w-[1320px] px-6 lg:px-10"><Reveal><p className="eyebrow text-center text-terracotta">Con la confianza de</p></Reveal></div><div className="mt-8"><Marquee durationSeconds={26}>{trustLogos}</Marquee></div></section>; }
 
