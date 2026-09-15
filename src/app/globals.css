@@ -32,7 +32,7 @@ body {
 .rise-in { animation: rise .8s ease-out both; } .rise-delay-1 { animation-delay: .12s; } .rise-delay-2 { animation-delay: .24s; } .rise-delay-3 { animation-delay: .36s; }
 @keyframes marquee-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 .marquee-track { animation: marquee-scroll linear infinite; }
-.marquee-mask:hover .marquee-track { animation-play-state: paused; }
+@media (hover: hover) and (pointer: fine) { .marquee-mask:hover .marquee-track { animation-play-state: paused; } }
 .marquee-mask { -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent); mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent); }
 .magnetic-btn { position: relative; overflow: hidden; isolation: isolate; }
 .magnetic-btn::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%); transform: translateX(-120%); transition: transform .7s ease; }
