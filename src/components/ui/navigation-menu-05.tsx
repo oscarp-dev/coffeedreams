@@ -2,6 +2,7 @@
 
 import { BookOpen, BriefcaseBusiness, FileText, GraduationCap, Home, Mail, Rss } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
 
 import {
@@ -12,14 +13,14 @@ import {
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
 
-const navigationMenuItems: { title: string; href?: string; icon: LucideIcon; isActive?: boolean }[] = [
-  { title: "Inicio", href: "/", icon: Home, isActive: true },
-  { title: "Servicios", icon: BriefcaseBusiness },
+const navigationMenuItems: { title: string; href?: string; icon: LucideIcon }[] = [
+  { title: "Inicio", href: "/", icon: Home },
+  { title: "Servicios", href: "/servicios", icon: BriefcaseBusiness },
   { title: "Proyectos", icon: FileText },
-  { title: "Formación", icon: GraduationCap },
+  { title: "Formación", href: "/formacion", icon: GraduationCap },
   { title: "Recursos", icon: Rss },
   { title: "Sobre nosotros", icon: BookOpen },
-  { title: "Contacto", icon: Mail },
+  { title: "Contacto", href: "/contacto", icon: Mail },
 ];
 
 const linkClassName = cn(
@@ -30,12 +31,13 @@ const linkClassName = cn(
 );
 
 export default function NavigationMenuWithActiveItem() {
+  const pathname = usePathname();
   return (
     <NavigationMenu>
       <NavigationMenuList className="gap-5 space-x-0">
         {navigationMenuItems.map((item) => (
           <NavigationMenuItem key={item.title}>
-            <NavigationMenuLink active={item.isActive} asChild className={linkClassName}>
+            <NavigationMenuLink active={item.href === pathname} asChild className={linkClassName}>
               {item.href ? (
                 <Link href={item.href}>
                   <item.icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
