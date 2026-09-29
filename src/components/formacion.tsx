@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Fragment, useEffect, useRef, useState, type FormEvent, type RefObject } from "react";
+import { Fragment, useEffect, useRef, useState, useSyncExternalStore, type FormEvent, type RefObject } from "react";
 import { AnimatePresence, motion, useMotionValue, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { ArrowDown, ArrowRight, BookOpen, Check, ChevronLeft, ChevronRight, Clock, Coffee, GraduationCap, Hand, Loader2, Lock, Mail, MessageCircle, Minus, Plus, ShieldCheck } from "lucide-react";
 import { Footer, NavigationHeader } from "@/components/site";
@@ -156,17 +156,30 @@ function ModuleSlide({ number, phase, title, topics, practice }: { number: numbe
   );
 }
 
-// Pinned horizontal gallery: the section is as tall as the track's overflow, and each pixel of
-// vertical scroll moves the track one pixel sideways while the viewport stays sticky.
+// Pinning is only smooth with a mouse/trackpad: on touch devices momentum scrolling runs off the
+// main thread, so a JS-driven transform lags behind it and the pinned track visibly shakes.
+const PINNED_QUERY = "(min-width: 1024px) and (hover: hover) and (pointer: fine)";
+const subscribePinned = (onChange: () => void) => {
+  const query = window.matchMedia(PINNED_QUERY);
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
+};
+
+// Desktop: pinned horizontal gallery. The section is as tall as the track's overflow, and each pixel
+// of vertical scroll moves the track one pixel sideways while the viewport stays sticky.
+// Touch: a native horizontal scroller with snap points, driven entirely by the browser.
 function Curriculum({ course }: { course: Course }) {
   const sectionRef = useRef<HTMLElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
+  const scrollerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const phasesRef = useRef<HTMLDivElement>(null);
+  const pinned = useSyncExternalStore(subscribePinned, () => window.matchMedia(PINNED_QUERY).matches, () => false);
   const distanceMV = useMotionValue(0);
   const [distance, setDistance] = useState(0);
   const [current, setCurrent] = useState(0);
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end end"] });
+  const { scrollXProgress } = useScroll({ container: scrollerRef });
   const x = useTransform(() => -scrollYProgress.get() * distanceMV.get());
   const total = course.modules.length;
   const practiceModule = course.phases[course.phases.length - 1].modules[0];
@@ -200,27 +213,40 @@ function Curriculum({ course }: { course: Course }) {
     row.scrollTo({ left: pill.offsetLeft - (row.clientWidth - pill.offsetWidth) / 2, behavior: "smooth" });
   }, [activePhase]);
 
-  useMotionValueEvent(x, "change", (latest) => {
-    const position = -latest;
+  const updateCurrent = (position: number, max: number) => {
     const offset = startOffset();
     const gaps = slides().map((slide) => Math.abs(slide.offsetLeft - offset - position));
-    setCurrent(distance > 0 && position >= distance - 2 ? total - 1 : gaps.indexOf(Math.min(...gaps)));
+    setCurrent(max > 0 && position >= max - 2 ? total - 1 : gaps.indexOf(Math.min(...gaps)));
+  };
+
+  useMotionValueEvent(x, "change", (latest) => {
+    if (pinned) updateCurrent(-latest, distance);
+  });
+  useMotionValueEvent(scrollXProgress, "change", () => {
+    const scroller = scrollerRef.current;
+    if (!pinned && scroller) updateCurrent(scroller.scrollLeft, scroller.scrollWidth - scroller.clientWidth);
   });
 
   const goTo = (index: number) => {
     const section = sectionRef.current;
     const slide = slides()[Math.max(0, Math.min(total - 1, index))];
     if (!section || !slide) return;
+    if (!pinned) {
+      scrollerRef.current?.scrollTo({ left: slide.offsetLeft - startOffset(), behavior: "smooth" });
+      return;
+    }
     const sectionTop = section.getBoundingClientRect().top + window.scrollY;
     window.scrollTo({ top: sectionTop + Math.min(slide.offsetLeft - startOffset(), distance), behavior: "smooth" });
   };
 
   const arrowClass = "flex h-11 w-11 items-center justify-center rounded-full border border-ink/15 text-ink/70 transition-colors hover:border-terracotta hover:bg-terracotta hover:text-white disabled:pointer-events-none disabled:opacity-30";
   const edge = "px-[max(1.5rem,calc((100%-1200px)/2+1.5rem))] lg:px-[max(2.5rem,calc((100%-1200px)/2+2.5rem))]";
+  // Same inset as `edge`, so snapped cards line up with the page content.
+  const snapEdge = "scroll-pl-[max(1.5rem,calc((100%-1200px)/2+1.5rem))] lg:scroll-pl-[max(2.5rem,calc((100%-1200px)/2+2.5rem))]";
 
   return (
-    <section id="contenido" ref={sectionRef} className="relative bg-cream" style={{ height: `calc(100svh + ${distance}px)` }}>
-      <div ref={viewportRef} className="sticky top-0 flex h-svh flex-col justify-center gap-7 overflow-hidden py-8 lg:gap-10">
+    <section id="contenido" ref={sectionRef} className="relative bg-cream" style={pinned ? { height: `calc(100svh + ${distance}px)` } : undefined}>
+      <div ref={viewportRef} className={`flex flex-col gap-7 overflow-hidden lg:gap-10 ${pinned ? "sticky top-0 h-svh justify-center py-8" : "py-16"}`}>
         <div className="mx-auto w-full max-w-[1200px] px-6 lg:px-10">
           <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
             <div>
@@ -248,17 +274,19 @@ function Curriculum({ course }: { course: Course }) {
           </div>
         </div>
 
-        <motion.div ref={trackRef} style={{ x }} className={`flex w-max items-start gap-4 ${edge}`} aria-label="Módulos de la formación" role="list">
-          {course.modules.map((courseModule, i) => (
-            <div key={courseModule.title} role="listitem">
-              <ModuleSlide number={i + 1} phase={course.phases[phaseIndexOf(i)].name} title={courseModule.title} topics={courseModule.topics} practice={i === practiceModule} />
-            </div>
-          ))}
-        </motion.div>
+        <div ref={scrollerRef} className={pinned ? "" : `no-scrollbar snap-x snap-mandatory overflow-x-auto overscroll-x-contain ${snapEdge}`}>
+          <motion.div ref={trackRef} style={{ x: pinned ? x : 0 }} className={`flex w-max items-start gap-4 ${edge}`} aria-label="Módulos de la formación" role="list">
+            {course.modules.map((courseModule, i) => (
+              <div key={courseModule.title} role="listitem" className="snap-start">
+                <ModuleSlide number={i + 1} phase={course.phases[phaseIndexOf(i)].name} title={courseModule.title} topics={courseModule.topics} practice={i === practiceModule} />
+              </div>
+            ))}
+          </motion.div>
+        </div>
 
         <div className="mx-auto flex w-full max-w-[1200px] items-center gap-8 px-6 lg:px-10">
           <div className="h-0.5 flex-1 overflow-hidden rounded-full bg-ink/10" aria-hidden="true">
-            <motion.div className="h-full origin-left rounded-full bg-terracotta" style={{ scaleX: scrollYProgress }} />
+            <motion.div className="h-full origin-left rounded-full bg-terracotta" style={{ scaleX: pinned ? scrollYProgress : scrollXProgress }} />
           </div>
           <a href="#reserva" className="group inline-flex shrink-0 items-center gap-2 text-[10px] font-semibold uppercase tracking-[.12em] text-olive">Reservar plaza <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" /></a>
         </div>
