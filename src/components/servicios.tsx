@@ -45,7 +45,6 @@ function ServiciosHero() {
           </nav>
         </div>
         <div className="rise-in rise-delay-2 relative mx-auto w-full max-w-[440px] lg:mr-0">
-          <div aria-hidden="true" className="absolute -inset-3 translate-x-4 translate-y-4 rounded-[34px] border border-terracotta/35" />
           <div className="relative aspect-[4/5] overflow-hidden rounded-[28px] shadow-[0_30px_60px_-30px_rgba(46,31,22,.55)]">
             <Image src="/images/interior-servicios.jpg" alt="Interior de una cafetería" fill preload sizes="(min-width: 1024px) 440px, 90vw" className="object-cover" />
           </div>

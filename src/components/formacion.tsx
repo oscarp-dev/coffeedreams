@@ -77,7 +77,6 @@ function CourseHero({ course }: { course: Course }) {
         </div>
 
         <div className="rise-in rise-delay-2 relative mx-auto w-full max-w-[430px] lg:mr-0">
-          <div aria-hidden="true" className="absolute -inset-3 translate-x-4 translate-y-4 rounded-b-[34px] rounded-t-[999px] border border-terracotta/35" />
           <div className="relative aspect-[4/5] overflow-hidden rounded-b-[28px] rounded-t-[999px] shadow-[0_30px_60px_-30px_rgba(46,31,22,.55)]">
             <motion.div className="absolute inset-x-0 -top-[12%] bottom-0" style={reduceMotion ? undefined : { y: imageY }}>
               <Image src="/images/latteart.jpg" alt="Vertido de Latte Art" fill preload sizes="(min-width: 1024px) 430px, 90vw" className="object-cover" />
@@ -281,7 +280,6 @@ function Instructor({ course }: { course: Course }) {
     <section ref={ref} className="bg-cream px-6 pb-20 lg:px-10 lg:pb-28">
       <div className="mx-auto grid max-w-[1150px] items-center gap-12 md:grid-cols-[.9fr_1.1fr] lg:gap-20">
         <Reveal className="relative mx-auto w-full max-w-[460px] md:mx-0">
-          <div aria-hidden="true" className="absolute -inset-3 -translate-x-4 translate-y-4 rounded-[32px] border border-terracotta/35" />
           <div className="relative aspect-[4/5] overflow-hidden rounded-[28px] shadow-[0_30px_60px_-30px_rgba(46,31,22,.55)]">
             <motion.div className="absolute inset-x-0 -inset-y-[7%]" style={reduceMotion ? undefined : { y: imageY }}>
               <Image src={course.instructorPhoto} alt={`${course.instructor} explicando a dos alumnas en la barra`} fill sizes="(min-width: 768px) 460px, 100vw" className="object-cover object-[center_35%]" />
