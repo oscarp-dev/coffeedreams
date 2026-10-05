@@ -34,10 +34,6 @@ function ProjectMeta({ project }: { project: Project }) {
   return <p className="flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[.12em] text-olive">{categoryLabel[project.category]}{project.city && <><span className="h-3 w-px bg-ink/20" aria-hidden="true" /><span className="flex items-center gap-1 text-ink/55"><MapPin size={12} aria-hidden="true" />{project.city}</span></>}</p>;
 }
 
-function ProjectTitle({ project, className }: { project: Project; className: string }) {
-  return <h3 className={`display ${className}`}>{project.name}{project.tagline && <span className="ml-3 align-middle font-sans text-[11px] font-semibold uppercase tracking-[.14em] text-ink/45">{project.tagline}</span>}</h3>;
-}
-
 function BrandLogo({ project, height, className = "" }: { project: Project; height: number; className?: string }) {
   return <Image src={project.brand.src} alt={project.brand.name} width={logoWidth(project.brand, height)} height={height} className={`w-auto object-contain ${className}`} />;
 }
@@ -60,7 +56,7 @@ function FeaturedProject({ project }: { project: Project }) {
         </div>
         <Reveal index={1} className="flex flex-col justify-center">
           <ProjectMeta project={project} />
-          <h2 className="mt-5"><BrandLogo project={project} height={80} className="h-16 mix-blend-multiply sm:h-20" /></h2>
+          <h2 className="mt-5 flex max-w-[460px] justify-center"><BrandLogo project={project} height={80} className="h-16 mix-blend-multiply sm:h-20" /></h2>
           {project.summary && <p className="mt-5 max-w-[460px] text-sm leading-7 text-ink/70">{project.summary}</p>}
           {videos.length > 0 && <div className="mt-8 border-t border-ink/10 pt-6">
             <p className="text-[10px] font-semibold uppercase tracking-[.12em] text-terracotta">{videos.map((v) => v.label).join(" → ")}</p>
@@ -81,31 +77,32 @@ function FeaturedProject({ project }: { project: Project }) {
   );
 }
 
+// The info sits on the photo itself, so the card reads as one piece even without a summary.
 function ProjectCard({ project, index }: { project: Project; index: number }) {
   return (
     <article className="group">
-      <TiltCard className="aspect-square overflow-hidden rounded-[20px] shadow-[0_18px_40px_-28px_rgba(46,31,22,.5)] transition-shadow duration-500 group-hover:shadow-[0_30px_60px_-28px_rgba(46,31,22,.6)]">
+      <TiltCard className="aspect-[4/5] overflow-hidden rounded-[20px] shadow-[0_18px_40px_-28px_rgba(46,31,22,.5)] transition-shadow duration-500 group-hover:shadow-[0_30px_60px_-28px_rgba(46,31,22,.6)]">
         <ProjectVisual project={project} sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw" hover />
-        {project.result && <div className="absolute bottom-4 left-4 rounded-2xl bg-ink/85 px-4 py-3 text-cream backdrop-blur-sm">
-          <p className="display text-2xl leading-none">{project.result.value}</p>
-          <p className="mt-1 text-[10px] text-cream/70">{project.result.label}</p>
-        </div>}
-      </TiltCard>
-      <div className="relative mt-6 pt-5">
-        <span aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-ink/10" />
-        <span aria-hidden="true" className="absolute inset-x-0 top-0 h-px origin-left scale-x-0 bg-terracotta transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-x-100" />
-        <Reveal index={index} className="flex items-center justify-between gap-4">
+        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/25 via-45% to-transparent transition-opacity duration-500 group-hover:opacity-95" />
+        <div className="absolute inset-x-0 top-0 flex items-start justify-between p-5">
+          <span className="rounded-2xl bg-cream/95 px-4 py-2.5 shadow-sm backdrop-blur-sm"><BrandLogo project={project} height={32} className="h-7 mix-blend-multiply" /></span>
+          <span aria-hidden="true" className="display text-lg text-cream/70 transition-colors duration-300 group-hover:text-cream">{String(index + 1).padStart(2, "0")}</span>
+        </div>
+        <div className="absolute inset-x-0 bottom-0 p-6 text-cream">
+          {project.result && <div className="mb-5 inline-block rounded-2xl bg-cream/15 px-4 py-3 backdrop-blur-sm">
+            <p className="display text-2xl leading-none">{project.result.value}</p>
+            <p className="mt-1 text-[10px] text-cream/75">{project.result.label}</p>
+          </div>}
           <p className="flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[.12em]">
-            <span className="rounded-full bg-sand/50 px-3 py-1 text-olive transition-colors duration-300 group-hover:bg-terracotta group-hover:text-white">{categoryLabel[project.category]}</span>
-            {project.city && <span className="flex items-center gap-1 text-ink/55"><MapPin size={12} aria-hidden="true" />{project.city}</span>}
+            <span className="rounded-full bg-cream/15 px-3 py-1 backdrop-blur-sm transition-colors duration-300 group-hover:bg-terracotta">{categoryLabel[project.category]}</span>
+            {project.city && <span className="flex items-center gap-1 text-cream/80"><MapPin size={12} aria-hidden="true" />{project.city}</span>}
           </p>
-          <span aria-hidden="true" className="display text-lg text-ink/20 transition-colors duration-300 group-hover:text-terracotta">{String(index + 1).padStart(2, "0")}</span>
-        </Reveal>
-        <Reveal index={index + 1}>
-          <ProjectTitle project={project} className="mt-3 text-3xl transition-transform duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:translate-x-1.5" />
-        </Reveal>
-        {project.summary && <Reveal index={index + 2}><p className="mt-2 max-w-[440px] text-sm leading-6 text-ink/65">{project.summary}</p></Reveal>}
-      </div>
+          <h3 className="display mt-4 text-4xl leading-none transition-transform duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:translate-x-1.5">{project.name}</h3>
+          {project.tagline && <p className="mt-2 text-[11px] font-semibold uppercase tracking-[.14em] text-cream/65">{project.tagline}</p>}
+          {project.summary && <p className="mt-3 max-w-[440px] text-sm leading-6 text-cream/80">{project.summary}</p>}
+          <span aria-hidden="true" className="mt-5 block h-px origin-left scale-x-0 bg-terracotta transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-x-100" />
+        </div>
+      </TiltCard>
     </article>
   );
 }

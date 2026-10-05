@@ -56,7 +56,6 @@ export const projects: Project[] = [
     category: "apertura", // TODO: confirm the type of project with the client.
     image: "/images/proyectos/honey-fachada.jpg",
     imagePosition: "object-[center_20%]",
-    summary: "Coffee & brunch de barrio con una carta propia de cafés fríos y de especialidad.",
   },
   {
     id: "qaphi",
@@ -66,7 +65,6 @@ export const projects: Project[] = [
     brand: brands.qaphi,
     category: "apertura", // TODO: confirm the type of project with the client.
     image: "/images/proyectos/qaphi-brunch.webp",
-    summary: "Brunch de temporada, café de tueste propio y repostería casera en dos locales: Plaza de Toros y San Blas.",
   },
   {
     id: "harrys",
@@ -77,6 +75,5 @@ export const projects: Project[] = [
     category: "apertura", // TODO: confirm the type of project with the client.
     image: "/images/proyectos/harrys-barra.webp",
     imagePosition: "object-[center_45%]",
-    summary: "Specialty coffee de origen, brunch artesanal y desayunos junto a la Avinguda de l'Estació.",
   },
 ];
