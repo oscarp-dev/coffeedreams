@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, BriefcaseBusiness, FileText, GraduationCap, Home, Mail, Rss } from "lucide-react";
+import { BookOpen, BriefcaseBusiness, FileText, GraduationCap, Home, Mail } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
@@ -16,9 +16,8 @@ import { cn } from "@/lib/utils";
 const navigationMenuItems: { title: string; href?: string; icon: LucideIcon }[] = [
   { title: "Inicio", href: "/", icon: Home },
   { title: "Servicios", href: "/servicios", icon: BriefcaseBusiness },
-  { title: "Proyectos", icon: FileText },
+  { title: "Proyectos", href: "/proyectos", icon: FileText },
   { title: "Formación", href: "/formacion", icon: GraduationCap },
-  { title: "Recursos", icon: Rss },
   { title: "Sobre nosotros", icon: BookOpen },
   { title: "Contacto", href: "/contacto", icon: Mail },
 ];

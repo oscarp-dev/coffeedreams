@@ -15,6 +15,7 @@ import { CountUp } from "@/components/ui/count-up";
 import { Magnetic } from "@/components/ui/magnetic";
 import { Marquee } from "@/components/ui/marquee";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
+import { brands, logoWidth } from "@/lib/brands";
 import { CONTACT_EMAIL, whatsappLink } from "@/lib/contact";
 
 function useScrolled(threshold = 8) {
@@ -53,7 +54,7 @@ function useHeaderScroll(threshold = 8) {
   return state;
 }
 
-const nav = [["Inicio", "/", true], ["Servicios", "/servicios", true], ["Proyectos", "/proyectos", false], ["Formación", "/formacion", true], ["Recursos", "/recursos", false], ["Sobre nosotros", "/sobre-nosotros", false], ["Contacto", "/contacto", true]] as const;
+const nav = [["Inicio", "/", true], ["Servicios", "/servicios", true], ["Proyectos", "/proyectos", true], ["Formación", "/formacion", true], ["Sobre nosotros", "/sobre-nosotros", false], ["Contacto", "/contacto", true]] as const;
 export const pillars = [
   { title: "Creamos", label: "Damos vida a tu proyecto", icon: Sparkles, image: "/images/pillar-creamos.jpg", href: "/servicios#consultoria", bullets: ["Concepto y viabilidad", "Diseño e identidad", "Carta y experiencia", "Operaciones y proveedores", "Apertura y acompañamiento"] },
   { title: "Analizamos", label: "Mejoramos tu negocio actual", icon: BarChart3, image: "/images/pillar-analizamos.jpg", href: "/servicios#consultoria", bullets: ["Auditoría integral", "Análisis de producto y carta", "Costes y rentabilidad", "Procesos y eficiencia", "Experiencia del cliente"] },
@@ -126,13 +127,13 @@ function Projects() { return <section className="grain bg-ink px-6 py-20 text-cr
 // Logos render at most 56px tall; width/height are the intrinsic ratio scaled to that height.
 const LOGO_HEIGHT = 56;
 const trustBrands = [
-  { name: "Fini Coffee & Bakery", src: "/images/trust/fini.png", w: 630, h: "h-12 sm:h-14" },
-  { name: "Latte Art by Barista Richy", src: "/images/trust/latte-art.png", w: 474, h: "h-12 sm:h-14" },
-  { name: "Honey Coffee & Brunch", src: "/images/trust/honey.png", w: 723, h: "h-10 sm:h-11" },
-  { name: "Qaphi Coffee | Brunch | Sweet", src: "/images/trust/qaphi.png", w: 913, h: "h-9 sm:h-10" },
-  { name: "Harry's Coffee & Brunch", src: "/images/trust/harrys.png", w: 1103, h: "h-9 sm:h-10" },
+  { brand: brands.fini, h: "h-12 sm:h-14" },
+  { brand: brands.latteArt, h: "h-12 sm:h-14" },
+  { brand: brands.honey, h: "h-10 sm:h-11" },
+  { brand: brands.qaphi, h: "h-9 sm:h-10" },
+  { brand: brands.harrys, h: "h-9 sm:h-10" },
 ];
-const trustLogos = trustBrands.map(({ name, src, w, h }) => <Image key={name} src={src} alt={name} width={Math.round((w * LOGO_HEIGHT) / 320)} height={LOGO_HEIGHT} draggable={false} className={`mix-blend-multiply w-auto shrink-0 object-contain px-10 opacity-60 grayscale transition duration-300 hover:opacity-100 hover:grayscale-0 ${h}`} />);
+const trustLogos = trustBrands.map(({ brand, h }) => <Image key={brand.name} src={brand.src} alt={brand.name} width={logoWidth(brand, LOGO_HEIGHT)} height={LOGO_HEIGHT} draggable={false} className={`mix-blend-multiply w-auto shrink-0 object-contain px-10 opacity-60 grayscale transition duration-300 hover:opacity-100 hover:grayscale-0 ${h}`} />);
 
 function Trust() { return <section className="bg-cream py-12"><div className="mx-auto max-w-[1320px] px-6 lg:px-10"><Reveal><p className="eyebrow text-center text-terracotta">Con la confianza de</p></Reveal></div><div className="mt-8"><Marquee durationSeconds={26}>{trustLogos}</Marquee></div></section>; }
 
@@ -146,7 +147,6 @@ const pageCopy: Record<string, { eyebrow: string; title: string; text: string; i
   servicios: { eyebrow: "Servicios", title: "Una mirada completa para un negocio con futuro.", text: "Aterrizamos conceptos, ordenamos operaciones y construimos experiencias de café que funcionan en el mundo real.", image: "/images/interior-servicios.jpg" },
   proyectos: { eyebrow: "Proyectos", title: "Lugares con identidad. Negocios con dirección.", text: "Una selección de aperturas, reposicionamientos y estrategias que convierten una buena idea en un lugar al que quieres volver.", image: "/images/interior-proyectos.jpg" },
   formacion: { eyebrow: "Formación", title: "El equipo es el ingrediente que lo cambia todo.", text: "Programas prácticos para elevar la técnica, la hospitalidad y la confianza de las personas que están detrás de cada barra.", image: "/images/interior-formacion.jpg" },
-  recursos: { eyebrow: "Recursos", title: "Ideas para mirar tu café con otros ojos.", text: "Notas, herramientas y conversaciones para tomar mejores decisiones y disfrutar más del camino.", image: "/images/interior-recursos.jpg" },
   "sobre-nosotros": { eyebrow: "Sobre nosotros", title: "Café, criterio y ganas de hacerlo bien.", text: "Somos un estudio pequeño con experiencia grande: nos implicamos en los detalles porque sabemos que ahí vive la diferencia.", image: "/images/interior-sobre-nosotros.jpg" },
   contacto: { eyebrow: "Contacto", title: "Cuéntanos qué estás imaginando.", text: "Tanto si partes de una servilleta como si ya tienes un negocio en marcha, nos encantará escucharte.", image: "/images/interior-contacto.jpg" },
 };
