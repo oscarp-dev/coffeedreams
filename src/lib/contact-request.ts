@@ -1,3 +1,5 @@
+import { escapeHtml, sendEmail, TEST_SENDER } from "@/lib/email";
+
 export const contactTopics = ["Abrir un café", "Mejorar mi negocio", "Formación", "Eventos", "Otro"] as const;
 export const contactPreferences = ["Email", "WhatsApp", "Llamada"] as const;
 
@@ -30,15 +32,6 @@ export function parseContactRequest(body: unknown): { request: ContactRequest } 
   return { request: { topic: topic as ContactRequest["topic"], name: name.trim(), email: email.trim(), phone: cleanPhone, preference: preference as ContactRequest["preference"], message: message.trim() } };
 }
 
-const RESEND_ENDPOINT = "https://api.resend.com/emails";
-// Resend's shared test sender: works without a verified domain, but only delivers to the
-// address the Resend account was registered with.
-const TEST_SENDER = "Coffee Dreams <onboarding@resend.dev>";
-
-function escapeHtml(value: string) {
-  return value.replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]!);
-}
-
 function teamEmail(request: ContactRequest) {
   const rows: [string, string][] = [["Tema", request.topic], ["Nombre", request.name], ["Email", request.email], ["Teléfono", request.phone || "-"], ["Prefiere contacto por", request.preference]];
   const text = `${rows.map(([label, value]) => `${label}: ${value}`).join("\n")}\n\n${request.message}`;
@@ -51,17 +44,6 @@ function acknowledgementEmail(request: ContactRequest) {
   const text = `Hola ${firstName},\n\nHemos recibido tu mensaje y te responderemos lo antes posible.\n\nTu mensaje:\n${request.message}\n\nCoffee Dreams Consulting`;
   const html = `<div style="font-family:sans-serif;font-size:14px;line-height:1.6"><p>Hola ${escapeHtml(firstName)},</p><p>Hemos recibido tu mensaje y te responderemos lo antes posible.</p><blockquote style="margin:0;padding-left:12px;border-left:3px solid #c46a45;color:#555;white-space:pre-wrap">${escapeHtml(request.message)}</blockquote><p>Coffee Dreams Consulting</p></div>`;
   return { subject: "Hemos recibido tu mensaje · Coffee Dreams", text, html };
-}
-
-async function sendEmail(apiKey: string, email: { from: string; to: string; replyTo?: string; subject: string; text: string; html: string }) {
-  const { replyTo, ...rest } = email;
-  const response = await fetch(RESEND_ENDPOINT, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ ...rest, ...(replyTo && { reply_to: replyTo }) }),
-  });
-  if (!response.ok) console.error("Resend error", response.status, await response.text().catch(() => ""));
-  return response.ok;
 }
 
 // Sends the request to the team inbox via Resend, with reply-to set to the sender so the team can

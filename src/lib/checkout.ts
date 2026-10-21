@@ -1,4 +1,5 @@
 import { getCourse, type Course } from "@/lib/courses";
+import { getStripe } from "@/lib/stripe";
 
 export type Booking = { courseId: string; name: string; email: string; phone: string; seats: number };
 
@@ -17,12 +18,33 @@ export function parseBooking(body: unknown): { booking: Booking; course: Course 
   return { booking: { courseId: course.id, name: name.trim(), email: email.trim(), phone: phone.trim(), seats }, course };
 }
 
-// Integration point for the payment provider (Stripe Checkout, Redsys, ...): create a hosted
-// checkout session for `course.priceCents * booking.seats`, with success_url /formacion/confirmacion,
-// and return its URL. The confirmation email is sent from the provider's webhook once the payment
-// succeeds, never from here. Returns null while no provider is configured.
-export async function createCheckoutSession(booking: Booking, course: Course): Promise<{ url: string } | null> {
-  void booking;
-  void course;
-  return null;
+// Creates a hosted Stripe Checkout session for `course.priceCents * booking.seats` and returns its
+// URL. The booking travels in the session metadata so the webhook can send the confirmation emails
+// once the payment succeeds; nothing is confirmed from here. Returns null while Stripe isn't configured.
+export async function createCheckoutSession(booking: Booking, course: Course, origin: string): Promise<{ url: string } | null> {
+  const stripe = getStripe();
+  if (!stripe) return null;
+
+  const session = await stripe.checkout.sessions.create({
+    mode: "payment",
+    locale: "es",
+    customer_email: booking.email,
+    line_items: [{
+      quantity: booking.seats,
+      price_data: {
+        currency: course.currency.toLowerCase(),
+        unit_amount: course.priceCents,
+        product_data: { name: `${course.titleLead} ${course.title}`, description: `Formación con ${course.instructor} · ${course.theoryHours + course.practiceHours} h` },
+      },
+    }],
+    metadata: { courseId: course.id, name: booking.name, email: booking.email, phone: booking.phone, seats: String(booking.seats) },
+    success_url: `${origin}/formacion/confirmacion?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${origin}/formacion#reserva`,
+  });
+  return session.url ? { url: session.url } : null;
+}
+
+export function bookingFromMetadata(metadata: Record<string, string> | null): Booking | null {
+  const parsed = parseBooking(metadata && { ...metadata, seats: Number(metadata.seats) });
+  return "error" in parsed ? null : parsed.booking;
 }
