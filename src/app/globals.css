@@ -1,32 +1,56 @@
 @import "tailwindcss";
 
-:root { --ink: #171717; --cream: #f7f5f0; --terracotta: #8b7355; --sand: #d8c2a8; --olive: #5c4430; --olive-deep: #2e1f16; }
+/* Terracotta is slightly deeper than the original #8b7355 so small accent text passes WCAG AA on cream. */
+:root { --ink: #171717; --cream: #f7f5f0; --terracotta: #82684c; --sand: #d8c2a8; --olive: #5c4430; --olive-deep: #2e1f16; --paper: #fbfaf7; }
 
 @theme inline {
-  --color-ink: var(--ink); --color-cream: var(--cream); --color-terracotta: var(--terracotta); --color-sand: var(--sand); --color-olive: var(--olive); --color-olive-deep: var(--olive-deep);
+  --color-ink: var(--ink); --color-cream: var(--cream); --color-terracotta: var(--terracotta); --color-sand: var(--sand); --color-olive: var(--olive); --color-olive-deep: var(--olive-deep); --color-paper: var(--paper);
   --font-sans: var(--font-montserrat); --font-display: var(--font-playfair);
 }
 * { box-sizing: border-box; }
-html { overflow-x: hidden; scroll-behavior: smooth; }
+html { overflow-x: hidden; scroll-behavior: smooth; scroll-padding-top: 88px; -webkit-text-size-adjust: 100%; }
 main { overflow-x: clip; }
-.stat-icon + p + p, main > section:nth-child(5) p.mt-2 { font-size: 10px; }
 
 body {
   background: var(--cream); color: var(--ink); font-family: var(--font-montserrat), sans-serif; overflow-x: clip;
+  text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased;
 }
-.display { font-family: var(--font-playfair), serif; }
+.display { font-family: var(--font-playfair), serif; letter-spacing: -.01em; }
+h1, h2, h3 { text-wrap: balance; }
+p { text-wrap: pretty; }
 .lucide { stroke-width: 1.5; }
+:focus-visible { outline: 2px solid var(--terracotta); outline-offset: 3px; }
+
+/* Shared layout width: every section lines up with the header. */
+.container-x { width: 100%; max-width: 1240px; margin-inline: auto; padding-inline: 1.5rem; }
+@media (min-width: 1024px) { .container-x { padding-inline: 2.5rem; } }
+
+.eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; }
+.eyebrow-line { display: flex; align-items: center; gap: .75rem; }
+.eyebrow-line::before { content: ""; width: 2rem; height: 1px; background: currentColor; }
+
+/* Buttons: one primary shape across the site (pill), with a quiet secondary. */
+.btn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: .75rem; min-height: 48px; padding: 0 1.6rem; border-radius: 999px; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; transition: background-color .3s, color .3s, border-color .3s, box-shadow .3s; }
+.btn svg { transition: transform .3s ease; }
+.btn:hover svg:last-child { transform: translateX(3px); }
+.btn-primary { background: var(--terracotta); color: #fff; box-shadow: 0 12px 26px -14px var(--terracotta); }
+.btn-primary:hover { background: var(--olive-deep); box-shadow: 0 14px 30px -14px var(--olive-deep); }
+.btn-outline { border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent); color: var(--ink); }
+.btn-outline:hover { border-color: var(--terracotta); color: var(--terracotta); }
+.btn-light { background: var(--cream); color: var(--ink); }
+.btn-light:hover { background: var(--sand); }
+.btn-outline-light { border: 1px solid color-mix(in srgb, var(--cream) 30%, transparent); color: var(--cream); }
+.btn-outline-light:hover { border-color: var(--sand); color: var(--sand); }
+.link-arrow { display: inline-flex; align-items: center; gap: .5rem; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+.link-arrow svg { transition: transform .3s ease; }
+.link-arrow:hover svg, .group:hover .link-arrow svg { transform: translateX(4px); }
+
 .icon-badge { box-shadow: 0 0 0 6px color-mix(in srgb, var(--terracotta) 12%, transparent); transition: transform .25s ease, background-color .25s ease, box-shadow .25s ease; }
 .group:hover .icon-badge { transform: translateY(-3px); box-shadow: 0 0 0 8px color-mix(in srgb, var(--terracotta) 18%, transparent); }
 .stat-icon { filter: drop-shadow(0 4px 8px rgba(216, 194, 168, .16)); }
 .process-icon { box-shadow: 0 0 0 6px color-mix(in srgb, var(--terracotta) 10%, transparent), 0 8px 18px rgba(23, 23, 23, .08); }
-.max-w-\[1320px\] { max-width: 100%; }
-.max-w-\[1150px\] { max-width: 1280px; }
-.rounded-\[22px\] { border-radius: 0; }
-.eyebrow { font-size: 10px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; }
 .grain { position: relative; isolation: isolate; }
 .grain::after { position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: .09; content: ""; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E"); mix-blend-mode: soft-light; }
-.steam-divider { height: 32px; margin-top: -1px; background: var(--cream); clip-path: ellipse(58% 55% at 50% 100%); }
 ::selection { background: var(--terracotta); color: var(--cream); }
 @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
 .rise-in { animation: rise .8s ease-out both; } .rise-delay-1 { animation-delay: .12s; } .rise-delay-2 { animation-delay: .24s; } .rise-delay-3 { animation-delay: .36s; }
@@ -44,9 +68,7 @@ body {
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; } }
 @media (max-width: 1023px) {
   header nav a, header nav button { min-height: 44px; display: flex; align-items: center; }
-  #newsletter, #newsletter + button { min-height: 44px; }
 }
 @media (max-width: 639px) {
-  .hero-copy { background-image: linear-gradient(to bottom, rgb(247 245 240 / .98), rgb(247 245 240 / .88) 58%, rgb(247 245 240 / .48)); }
-  .stat-icon + p + p, main > section:nth-child(5) p.mt-2 { font-size: 10px; }
+  .hero-copy { background-image: linear-gradient(to bottom, rgb(247 245 240 / .98), rgb(247 245 240 / .92) 62%, rgb(247 245 240 / .6)); }
 }

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowRight, Check, Loader2, Mail, MessageCircle, Phone, X } from "lucide-react";
-import { CONTACT_EMAIL, whatsappLink } from "@/lib/contact";
+import { CONTACT_EMAIL, PHONE_NUMBER, whatsappLink } from "@/lib/contact";
 import { contactPreferences, contactTopics, type ContactRequest } from "@/lib/contact-request";
 
 type Topic = ContactRequest["topic"];
@@ -18,7 +18,7 @@ export function openContact(topic?: Topic) {
 }
 
 const inputClass = "w-full rounded-lg border border-ink/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-terracotta focus:ring-2 focus:ring-terracotta/20";
-const labelClass = "mb-1.5 block text-[10px] font-semibold uppercase tracking-[.12em] text-ink/60";
+const labelClass = "mb-1.5 block text-[11px] font-semibold uppercase tracking-[.12em] text-ink/60";
 
 function composeMessage(request: ContactRequest) {
   return `Hola, soy ${request.name}.\nTema: ${request.topic}\n\n${request.message}\n\nEmail: ${request.email}\nTeléfono: ${request.phone || "-"}\nPrefiero que me contactéis por: ${request.preference}`;
@@ -59,17 +59,17 @@ export function ContactForm({ initialTopic, onClose, autoFocus = false }: { init
         <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-terracotta text-white"><Check size={28} aria-hidden="true" /></span>
         <h3 className="display mt-6 text-3xl">¡Mensaje enviado!</h3>
         <p className="mx-auto mt-3 max-w-[340px] text-sm leading-6 text-ink/65">Gracias, {draft.name.split(" ")[0]}. Te responderemos lo antes posible por {draft.preference === "Llamada" ? "teléfono" : draft.preference}.</p>
-        {onClose && <button type="button" onClick={onClose} className="mt-8 rounded-full border border-ink/15 px-6 py-3 text-[10px] font-semibold uppercase tracking-[.12em] transition-colors hover:border-terracotta hover:text-terracotta">Cerrar</button>}
+        {onClose && <button type="button" onClick={onClose} className="mt-8 rounded-full border border-ink/15 px-6 py-3 text-[11px] font-semibold uppercase tracking-[.12em] transition-colors hover:border-terracotta hover:text-terracotta">Cerrar</button>}
       </div>
     ) : status === "unavailable" && draft ? (
       <div className="py-6 text-center" role="status">
         <h3 className="display text-2xl">Envíalo con un toque</h3>
         <p className="mx-auto mt-3 max-w-[360px] text-sm leading-6 text-ink/65">Estamos terminando de activar el envío directo. Tu mensaje ya está redactado: elige por dónde enviárnoslo.</p>
         <div className="mt-7 grid gap-3">
-          <a href={whatsappLink(composeMessage(draft))} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#25D366] px-5 py-3.5 text-[11px] font-semibold uppercase tracking-[.1em] text-white transition hover:brightness-95"><MessageCircle size={16} aria-hidden="true" />Enviar por WhatsApp</a>
-          <a href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`${draft.topic} · ${draft.name}`)}&body=${encodeURIComponent(composeMessage(draft))}`} className="inline-flex items-center justify-center gap-2 rounded-lg bg-terracotta px-5 py-3.5 text-[11px] font-semibold uppercase tracking-[.1em] text-white transition-colors hover:bg-olive-deep"><Mail size={16} aria-hidden="true" />Enviar por email</a>
+          <a href={whatsappLink(composeMessage(draft))} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#25D366] px-5 py-3.5 text-xs font-semibold uppercase tracking-[.1em] text-white transition hover:brightness-95"><MessageCircle size={16} aria-hidden="true" />Enviar por WhatsApp</a>
+          <a href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`${draft.topic} · ${draft.name}`)}&body=${encodeURIComponent(composeMessage(draft))}`} className="inline-flex items-center justify-center gap-2 rounded-lg bg-terracotta px-5 py-3.5 text-xs font-semibold uppercase tracking-[.1em] text-white transition-colors hover:bg-olive-deep"><Mail size={16} aria-hidden="true" />Enviar por email</a>
         </div>
-        <button type="button" onClick={() => setStatus("idle")} className="mt-5 text-[11px] text-ink/50 underline-offset-4 hover:text-ink hover:underline">Volver al formulario</button>
+        <button type="button" onClick={() => setStatus("idle")} className="mt-5 text-xs text-ink/60 underline-offset-4 hover:text-ink hover:underline">Volver al formulario</button>
       </div>
     ) : (
       <form onSubmit={onSubmit} className="grid gap-5" noValidate={false}>
@@ -100,12 +100,12 @@ export function ContactForm({ initialTopic, onClose, autoFocus = false }: { init
         </fieldset>
         <label><span className={labelClass}>Mensaje</span><textarea name="message" required minLength={10} maxLength={3000} rows={4} className={inputClass} placeholder="Cuéntanos tu idea, tu negocio o lo que necesitas…" /></label>
         <input type="text" name="company" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 opacity-0" />
-        <label className="flex items-start gap-3 text-xs leading-5 text-ink/65">
+        <label className="flex items-start gap-3 text-[13px] leading-6 text-ink/65">
           <input type="checkbox" required className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--terracotta)]" />
           Acepto que Coffee Dreams use mis datos para responder a este mensaje.
         </label>
         {status === "error" && <p className="rounded-lg bg-red-50 px-4 py-3 text-xs text-red-700" role="alert">{error}</p>}
-        <button type="submit" disabled={status === "sending"} className="magnetic-btn group flex items-center justify-center gap-3 rounded-lg bg-terracotta px-6 py-4 text-[11px] font-semibold uppercase tracking-[.12em] text-white shadow-[0_12px_26px_-12px_var(--terracotta)] transition-colors hover:bg-olive-deep disabled:opacity-70">
+        <button type="submit" disabled={status === "sending"} className="magnetic-btn group flex items-center justify-center gap-3 rounded-lg bg-terracotta px-6 py-4 text-xs font-semibold uppercase tracking-[.12em] text-white shadow-[0_12px_26px_-12px_var(--terracotta)] transition-colors hover:bg-olive-deep disabled:opacity-70">
           {status === "sending" ? <><Loader2 size={16} className="animate-spin" aria-hidden="true" />Enviando…</> : <>Enviar mensaje<ArrowRight size={15} className="transition-transform duration-300 group-hover:translate-x-1" /></>}
         </button>
       </form>
@@ -117,7 +117,7 @@ export function DirectContacts() {
     <div className="flex flex-wrap gap-2">
       <a href={whatsappLink("Hola, me gustaría hablar con Coffee Dreams.")} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-[#25D366]/50 px-4 py-2 text-xs font-semibold text-[#128C4B] transition-colors hover:bg-[#25D366] hover:text-white"><MessageCircle size={14} aria-hidden="true" />WhatsApp</a>
       <a href={`mailto:${CONTACT_EMAIL}`} className="inline-flex items-center gap-2 rounded-full border border-ink/15 px-4 py-2 text-xs font-semibold text-ink/70 transition-colors hover:border-terracotta hover:text-terracotta"><Mail size={14} aria-hidden="true" />{CONTACT_EMAIL}</a>
-      <a href="tel:+34961234567" className="inline-flex items-center gap-2 rounded-full border border-ink/15 px-4 py-2 text-xs font-semibold text-ink/70 transition-colors hover:border-terracotta hover:text-terracotta"><Phone size={14} aria-hidden="true" />Llamar</a>
+      <a href={`tel:${PHONE_NUMBER}`} className="inline-flex items-center gap-2 rounded-full border border-ink/15 px-4 py-2 text-xs font-semibold text-ink/70 transition-colors hover:border-terracotta hover:text-terracotta"><Phone size={14} aria-hidden="true" />Llamar</a>
     </div>
   );
 }
@@ -177,7 +177,7 @@ export function ContactDrawer() {
               <button type="button" onClick={close} aria-label="Cerrar" className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full border border-cream/20 text-cream/80 transition-colors hover:bg-cream hover:text-ink"><X size={18} /></button>
               <p className="eyebrow flex items-center gap-3 text-sand"><span className="h-px w-8 bg-sand" aria-hidden="true" />Hablemos</p>
               <h2 id="contact-title" className="display mt-4 max-w-[360px] text-[34px] leading-[1.08]">Cuéntanos qué estás imaginando.</h2>
-              <p className="mt-3 max-w-[380px] text-[13px] leading-6 text-cream/65">Tanto si partes de una servilleta como si ya tienes un negocio en marcha, nos encantará escucharte.</p>
+              <p className="mt-3 max-w-[380px] text-sm leading-6 text-cream/65">Tanto si partes de una servilleta como si ya tienes un negocio en marcha, nos encantará escucharte.</p>
             </div>
 
             <div className="flex-1 px-7 py-8 sm:px-9">
@@ -185,7 +185,7 @@ export function ContactDrawer() {
             </div>
 
             <div className="border-t border-ink/10 px-7 py-6 sm:px-9">
-              <p className="text-[10px] font-semibold uppercase tracking-[.12em] text-ink/45">¿Prefieres escribirnos directamente?</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[.12em] text-ink/60">¿Prefieres escribirnos directamente?</p>
               <div className="mt-4"><DirectContacts /></div>
             </div>
           </motion.div>

@@ -51,7 +51,7 @@ export default async function Confirmacion({ searchParams }: { searchParams: Pro
               <dt className="text-ink/55">Total</dt><dd className="text-right font-medium">{formatPrice(session.amount_total ?? course.priceCents * booking.seats, course.currency)}</dd>
             </dl>
           )}
-          <Link href="/formacion" className="group mt-9 inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[.12em] text-olive">Volver a la formación <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" /></Link>
+          <Link href="/formacion" className="group mt-9 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[.12em] text-olive">Volver a la formación <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" /></Link>
         </div>
       </main>
       <Footer />
