@@ -4,17 +4,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, type FormEvent, type KeyboardEvent } from "react";
 import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from "motion/react";
-import { ArrowDown, ArrowRight, CalendarDays, Check, Clock, Coffee, GraduationCap, LayoutGrid, List, Mail, MapPin, MessageCircle, Minus, Plus, Receipt, SlidersHorizontal, Users } from "lucide-react";
+import { ArrowDown, ArrowRight, CalendarDays, Check, Clock, Loader2, Coffee, GraduationCap, LayoutGrid, List, Mail, MapPin, MessageCircle, Minus, Plus, Receipt, SlidersHorizontal, Users } from "lucide-react";
 import { Footer, NavigationHeader, pillars, steps } from "@/components/site";
 import { Magnetic } from "@/components/ui/magnetic";
 import { Reveal } from "@/components/ui/reveal";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { CONTACT_EMAIL, whatsappLink } from "@/lib/contact";
 import { formatPrice } from "@/lib/courses";
+import { composeQuote, MAX_PEOPLE, quoteEstimate, type QuoteRequest } from "@/lib/quote-request";
 import { serviceCategories, serviceConditions, services, type Service, type ServiceCategory } from "@/lib/services";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
-const MAX_PEOPLE = 20;
 const pillarImages: Record<string, string> = { Creamos: "/images/interior-recursos.jpg", Analizamos: "/images/consultoria-auditoria.jpg", Formamos: "/images/richy-formacion.jpg" };
 // Portrait photos: keep faces and the logo in frame when cropped to the panel.
 const pillarImagePosition: Record<string, string> = { Analizamos: "object-[center_42%]" };
@@ -268,28 +268,39 @@ const labelClass = "mb-1.5 block text-[11px] font-semibold uppercase tracking-[.
 function QuoteBuilder({ serviceId, setServiceId }: { serviceId: string; setServiceId: (id: string) => void }) {
   const [people, setPeople] = useState(1);
   const service = services.find((s) => s.id === serviceId) ?? services[0];
-  const units = service.perPerson ? people : 1;
-  const estimate = service.priceCents * units;
+  const estimate = quoteEstimate(service, people);
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [error, setError] = useState("");
+  const [sentName, setSentName] = useState("");
 
-  function onSubmit(event: FormEvent<HTMLFormElement>) {
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const channel = (event.nativeEvent as SubmitEvent).submitter?.getAttribute("value");
-    const date = String(data.get("date") ?? "");
-    const lines = [
-      `Hola, me gustaría solicitar presupuesto para: ${service.name}`,
-      service.perPerson ? `Personas: ${people}` : "",
-      date ? `Fecha aproximada: ${new Date(date).toLocaleDateString("es-ES")}` : "",
-      `Estimación: ${formatPrice(estimate)} + IVA`,
-      "",
-      `Nombre: ${data.get("name")}`,
-      `Email: ${data.get("email")}`,
-      `Teléfono: ${data.get("phone")}`,
-      data.get("message") ? `\n${data.get("message")}` : "",
-    ].filter((line, i, all) => line !== "" || all[i - 1] !== "");
-    const text = lines.join("\n");
-    const url = channel === "email" ? `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`Presupuesto: ${service.name}`)}&body=${encodeURIComponent(text)}` : whatsappLink(text);
-    window.open(url, channel === "email" ? "_self" : "_blank", "noopener");
+    const request: QuoteRequest = { serviceId: service.id, people: service.perPerson ? people : 1, date: String(data.get("date") ?? ""), name: String(data.get("name") ?? ""), email: String(data.get("email") ?? ""), phone: String(data.get("phone") ?? ""), message: String(data.get("message") ?? "") };
+    const text = composeQuote(request, service);
+    if (channel !== "email") {
+      window.open(whatsappLink(text), "_blank", "noopener");
+      return;
+    }
+    setStatus("sending");
+    setError("");
+    try {
+      const response = await fetch("/api/quote", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...request, company: data.get("company") }) });
+      const result = await response.json().catch(() => ({}));
+      if (response.ok) { setSentName(request.name.split(" ")[0]); setStatus("sent"); return; }
+      // Direct sending isn't configured yet: hand the drafted request to the mail client instead.
+      if (response.status === 503) {
+        setStatus("idle");
+        window.location.assign(`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`Presupuesto: ${service.name}`)}&body=${encodeURIComponent(text)}`);
+        return;
+      }
+      setError(result.error ?? "No hemos podido enviar tu solicitud. Inténtalo de nuevo.");
+      setStatus("error");
+    } catch {
+      setError("Parece que no hay conexión. Inténtalo de nuevo.");
+      setStatus("error");
+    }
   }
 
   return (
@@ -315,7 +326,16 @@ function QuoteBuilder({ serviceId, setServiceId }: { serviceId: string; setServi
         </Reveal>
 
         <Reveal index={1} className="rounded-3xl bg-cream p-6 text-ink shadow-[0_40px_80px_-40px_rgba(0,0,0,.6)] sm:p-9">
+          {status === "sent" ? (
+            <div className="py-10 text-center" role="status">
+              <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-terracotta text-white"><Check size={28} aria-hidden="true" /></span>
+              <h3 className="display mt-6 text-3xl">¡Solicitud enviada!</h3>
+              <p className="mx-auto mt-3 max-w-[340px] text-sm leading-6 text-ink/65">Gracias, {sentName}. Revisaremos tu solicitud y te responderemos personalmente con el presupuesto final.</p>
+              <button type="button" onClick={() => setStatus("idle")} className="mt-8 rounded-full border border-ink/15 px-6 py-3 text-[11px] font-semibold uppercase tracking-[.12em] transition-colors hover:border-terracotta hover:text-terracotta">Pedir otro presupuesto</button>
+            </div>
+          ) : (
           <form onSubmit={onSubmit} className="grid gap-5">
+            <input type="text" name="company" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
             <fieldset>
               <legend className={labelClass}>Servicio</legend>
               <div className="grid gap-2">
@@ -348,15 +368,17 @@ function QuoteBuilder({ serviceId, setServiceId }: { serviceId: string; setServi
             <label><span className={labelClass}>Nombre</span><input name="name" required minLength={2} autoComplete="name" className={inputClass} /></label>
             <div className="grid gap-5 sm:grid-cols-2">
               <label><span className={labelClass}>Email</span><input name="email" type="email" required autoComplete="email" className={inputClass} /></label>
-              <label><span className={labelClass}>Teléfono</span><input name="phone" type="tel" required autoComplete="tel" className={inputClass} /></label>
+              <label><span className={labelClass}>Teléfono</span><input name="phone" type="tel" required pattern="\+?[\d\s\-]{7,20}" autoComplete="tel" className={inputClass} /></label>
             </div>
-            <label><span className={labelClass}>Cuéntanos más (opcional)</span><textarea name="message" rows={3} className={inputClass} placeholder="Tipo de negocio, lugar, necesidades especiales…" /></label>
+            <label><span className={labelClass}>Cuéntanos más (opcional)</span><textarea name="message" rows={3} maxLength={3000} className={inputClass} placeholder="Tipo de negocio, lugar, necesidades especiales…" /></label>
+            {status === "error" && <p className="rounded-lg bg-red-50 px-4 py-3 text-xs text-red-700" role="alert">{error}</p>}
             <div className="grid gap-3 sm:grid-cols-2">
               <button type="submit" value="whatsapp" className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#25D366] px-5 py-4 text-xs font-semibold uppercase tracking-[.1em] text-white transition hover:brightness-95"><MessageCircle size={16} aria-hidden="true" />Enviar por WhatsApp</button>
-              <button type="submit" value="email" className="inline-flex items-center justify-center gap-2 rounded-lg bg-terracotta px-5 py-4 text-xs font-semibold uppercase tracking-[.1em] text-white transition-colors hover:bg-olive-deep"><Mail size={16} aria-hidden="true" />Enviar por email</button>
+              <button type="submit" value="email" disabled={status === "sending"} className="inline-flex items-center justify-center gap-2 rounded-lg bg-terracotta px-5 py-4 text-xs font-semibold uppercase tracking-[.1em] text-white transition-colors hover:bg-olive-deep disabled:opacity-70">{status === "sending" ? <><Loader2 size={16} className="animate-spin" aria-hidden="true" />Enviando…</> : <><Mail size={16} aria-hidden="true" />Enviar por email</>}</button>
             </div>
             <p className="text-center text-xs leading-5 text-ink/60">La estimación es orientativa. Te confirmaremos el presupuesto final.</p>
           </form>
+          )}
         </Reveal>
       </div>
     </section>

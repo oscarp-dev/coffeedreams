@@ -1,4 +1,4 @@
-import { escapeHtml, sendEmail, TEST_SENDER } from "@/lib/email";
+import { escapeHtml, sendToTeam } from "@/lib/email";
 
 export const contactTopics = ["Abrir un café", "Mejorar mi negocio", "Formación", "Eventos", "Otro"] as const;
 export const contactPreferences = ["Email", "WhatsApp", "Llamada"] as const;
@@ -46,24 +46,6 @@ function acknowledgementEmail(request: ContactRequest) {
   return { subject: "Hemos recibido tu mensaje · Coffee Dreams", text, html };
 }
 
-// Sends the request to the team inbox via Resend, with reply-to set to the sender so the team can
-// answer straight from their mail client. The acknowledgement to the sender is only sent once
-// CONTACT_FROM_EMAIL points at a verified domain (the test sender can't reach outside addresses).
-// Returns false while Resend isn't configured, so the form falls back to WhatsApp / mailto.
-export async function sendContactRequest(request: ContactRequest): Promise<boolean> {
-  const apiKey = process.env.RESEND_API_KEY;
-  const to = process.env.CONTACT_TO_EMAIL;
-  if (!apiKey || !to) return false;
-  const from = process.env.CONTACT_FROM_EMAIL || TEST_SENDER;
-
-  try {
-    const sent = await sendEmail(apiKey, { from, to, replyTo: request.email, ...teamEmail(request) });
-    if (sent && process.env.CONTACT_FROM_EMAIL) {
-      await sendEmail(apiKey, { from, to: request.email, replyTo: to, ...acknowledgementEmail(request) });
-    }
-    return sent;
-  } catch (error) {
-    console.error("Resend request failed", error);
-    return false;
-  }
+export function sendContactRequest(request: ContactRequest) {
+  return sendToTeam(request.email, teamEmail(request), acknowledgementEmail(request));
 }
