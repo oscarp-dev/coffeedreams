@@ -22,20 +22,24 @@ export function quoteEstimate(service: Service, people: number) {
   return service.priceCents * (service.perPerson ? people : 1);
 }
 
+// Courses individuals book online are quoted per group: the form asks for information, not a price.
+export const isInfoRequest = (service: Service) => Boolean(service.bookableOnline);
+
 // Plain-text summary used both for the team email and for the WhatsApp / mailto fallbacks.
 export function composeQuote(request: QuoteRequest, service: Service) {
+  const info = isInfoRequest(service);
   const lines = [
-    `Hola, me gustaría solicitar presupuesto para: ${service.name}`,
+    info ? `Hola, me gustaría recibir información sobre «${service.name}» para mi empresa o equipo.` : `Hola, me gustaría solicitar presupuesto para: ${service.name}`,
     service.perPerson ? `Personas: ${request.people}` : "",
     request.date ? `Fecha aproximada: ${new Date(request.date).toLocaleDateString("es-ES")}` : "",
-    `Estimación: ${formatPrice(quoteEstimate(service, request.people))} + IVA`,
+    info ? "" : `Estimación: ${formatPrice(quoteEstimate(service, request.people))} + IVA`,
     "",
     `Nombre: ${request.name}`,
     `Email: ${request.email}`,
     `Teléfono: ${request.phone}`,
     request.message ? `\n${request.message}` : "",
   ];
-  return lines.filter((line, i, all) => line !== "" || all[i - 1] !== "").join("\n");
+  return lines.filter((line, i, all) => line !== "" || (i > 0 && all[i - 1] !== "")).join("\n");
 }
 
 export function parseQuoteRequest(body: unknown): { request: QuoteRequest; service: Service } | { error: string } | { spam: true } {
@@ -58,15 +62,18 @@ export function parseQuoteRequest(body: unknown): { request: QuoteRequest; servi
 function teamEmail(request: QuoteRequest, service: Service) {
   const text = composeQuote(request, service);
   const html = `<p style="font-family:sans-serif;font-size:14px;line-height:1.6;white-space:pre-wrap">${escapeHtml(text)}</p>`;
-  return { subject: `Solicitud de presupuesto: ${service.name} · ${request.name}`, text, html };
+  const kind = isInfoRequest(service) ? "Información para empresa" : "Solicitud de presupuesto";
+  return { subject: `${kind}: ${service.name} · ${request.name}`, text, html };
 }
 
 function acknowledgementEmail(request: QuoteRequest, service: Service) {
   const firstName = request.name.split(" ")[0];
-  const estimate = `${formatPrice(quoteEstimate(service, request.people))} + IVA`;
-  const text = `Hola ${firstName},\n\nHemos recibido tu solicitud de presupuesto para "${service.name}" (estimación orientativa: ${estimate}). Te responderemos personalmente con el presupuesto final.\n\nCoffee Dreams Consulting`;
-  const html = `<div style="font-family:sans-serif;font-size:14px;line-height:1.6"><p>Hola ${escapeHtml(firstName)},</p><p>Hemos recibido tu solicitud de presupuesto para <strong>${escapeHtml(service.name)}</strong> (estimación orientativa: ${estimate}). Te responderemos personalmente con el presupuesto final.</p><p>Coffee Dreams Consulting</p></div>`;
-  return { subject: "Hemos recibido tu solicitud de presupuesto · Coffee Dreams", text, html };
+  const detail = isInfoRequest(service)
+    ? "Te enviaremos la información y una propuesta para tu equipo."
+    : `Estimación orientativa: ${formatPrice(quoteEstimate(service, request.people))} + IVA. Te responderemos personalmente con el presupuesto final.`;
+  const text = `Hola ${firstName},\n\nHemos recibido tu solicitud sobre "${service.name}". ${detail}\n\nCoffee Dreams Consulting`;
+  const html = `<div style="font-family:sans-serif;font-size:14px;line-height:1.6"><p>Hola ${escapeHtml(firstName)},</p><p>Hemos recibido tu solicitud sobre <strong>${escapeHtml(service.name)}</strong>. ${detail}</p><p>Coffee Dreams Consulting</p></div>`;
+  return { subject: "Hemos recibido tu solicitud · Coffee Dreams", text, html };
 }
 
 export function sendQuoteRequest(request: QuoteRequest, service: Service) {

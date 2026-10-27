@@ -15,7 +15,9 @@ import { CountUp } from "@/components/ui/count-up";
 import { Magnetic } from "@/components/ui/magnetic";
 import { Marquee } from "@/components/ui/marquee";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
+import { OfferBadge, WasPrice } from "@/components/ui/offer-price";
 import { brands, logoWidth } from "@/lib/brands";
+import { formatPrice, latteArtCourse } from "@/lib/courses";
 import { CONTACT_EMAIL, LOCATION, PHONE_DISPLAY, PHONE_NUMBER, SOCIAL_LINKS, whatsappLink } from "@/lib/contact";
 import { projects } from "@/lib/projects";
 
@@ -185,6 +187,9 @@ function Pillars() {
                   <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink/35 to-transparent" />
                   <span className="absolute left-4 top-4 flex h-12 w-12 items-center justify-center rounded-full bg-cream text-olive shadow-sm"><Icon size={22} aria-hidden="true" /></span>
                   <span className="display absolute bottom-3 right-5 text-5xl text-cream/85" aria-hidden="true">0{index + 1}</span>
+                  {href === "/formacion" && latteArtCourse.listPriceCents && (
+                    <span className="absolute right-4 top-4 flex items-center gap-2 rounded-full bg-cream/95 py-1 pl-3 pr-1 text-xs font-semibold text-ink shadow-sm backdrop-blur-sm">Latte Art <WasPrice item={latteArtCourse} className="text-ink/45" />{formatPrice(latteArtCourse.priceCents)}<OfferBadge item={latteArtCourse} /></span>
+                  )}
                 </div>
                 <div className="flex flex-1 flex-col px-4 pb-4 pt-6">
                   <h3 className="display text-[32px] leading-none">{title}</h3>

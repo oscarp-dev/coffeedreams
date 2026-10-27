@@ -62,8 +62,10 @@ export function getCourse(id: string): Course | undefined {
   return courses[id];
 }
 
-export function discountPercent(course: Course) {
-  return course.listPriceCents ? Math.round((1 - course.priceCents / course.listPriceCents) * 100) : 0;
+export type Priced = { priceCents: number; listPriceCents?: number };
+
+export function discountPercent(item: Priced) {
+  return item.listPriceCents ? Math.round((1 - item.priceCents / item.listPriceCents) * 100) : 0;
 }
 
 export function formatPrice(cents: number, currency: Course["currency"] = "EUR") {

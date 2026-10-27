@@ -1,3 +1,5 @@
+import { latteArtCourse } from "@/lib/courses";
+
 export type ServiceCategory = "formacion" | "eventos";
 
 export type Service = {
@@ -6,10 +8,15 @@ export type Service = {
   category: ServiceCategory;
   duration: string;
   priceCents: number;
+  // Price before the current offer, shown struck through.
+  listPriceCents?: number;
   perPerson: boolean;
   description: string;
   image: string;
   href?: string;
+  // Open course individuals book online at `href`; the quote form only asks for information
+  // about a group / company edition instead of showing an estimate.
+  bookableOnline?: boolean;
 };
 
 export const serviceCategories: { id: ServiceCategory; label: string }[] = [
@@ -24,8 +31,11 @@ export const services: Service[] = [
     name: "Formación de Café y Latte Art",
     category: "formacion",
     duration: "4 horas",
-    priceCents: 12000,
+    // Same price (and offer) as the bookable course on /formacion.
+    priceCents: latteArtCourse.priceCents,
+    listPriceCents: latteArtCourse.listPriceCents,
     perPerson: true,
+    bookableOnline: true,
     description: "Del grano al vertido: espresso, leche y Latte Art en una formación teórico-práctica.",
     image: "/images/latteart.jpg",
     href: "/formacion",

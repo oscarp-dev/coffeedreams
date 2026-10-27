@@ -9,6 +9,7 @@ import { Magnetic } from "@/components/ui/magnetic";
 import { Reveal } from "@/components/ui/reveal";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { CONTACT_EMAIL, whatsappLink } from "@/lib/contact";
+import { OfferBadge, WasPrice } from "@/components/ui/offer-price";
 import { discountPercent, formatPrice, type Course } from "@/lib/courses";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -70,7 +71,7 @@ function CourseHero({ course }: { course: Course }) {
           </dl>
           <div className="rise-in rise-delay-3 mt-10 flex flex-wrap items-center gap-3">
             <Magnetic strength={0.25}>
-              <a href="#reserva" className="btn btn-primary magnetic-btn">Reservar mi plaza <span className="h-3.5 w-px bg-white/35" aria-hidden="true" /><WasPrice course={course} className="text-white/60" />{formatPrice(course.priceCents)}<ArrowRight size={15} aria-hidden="true" /></a>
+              <a href="#reserva" className="btn btn-primary magnetic-btn">Reservar mi plaza <span className="h-3.5 w-px bg-white/35" aria-hidden="true" /><WasPrice item={course} className="text-white/60" />{formatPrice(course.priceCents)}<ArrowRight size={15} aria-hidden="true" /></a>
             </Magnetic>
             <a href="#contenido" className="btn btn-outline group">Ver contenido <ArrowDown size={14} className="transition-transform duration-300 group-hover:translate-y-0.5" /></a>
           </div>
@@ -83,8 +84,8 @@ function CourseHero({ course }: { course: Course }) {
             </motion.div>
           </div>
           <div className="float-soft absolute -right-3 top-14 rounded-2xl bg-ink px-5 py-4 text-cream shadow-xl sm:-right-10">
-            <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[.14em] text-sand">Tu plaza<OfferBadge course={course} /></p>
-            <p className="display flex items-baseline gap-2 text-3xl leading-tight"><WasPrice course={course} className="text-lg text-cream/50" />{formatPrice(course.priceCents)}</p>
+            <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[.14em] text-sand">Tu plaza<OfferBadge item={course} /></p>
+            <p className="display flex items-baseline gap-2 text-3xl leading-tight"><WasPrice item={course} className="text-lg text-cream/50" />{formatPrice(course.priceCents)}</p>
             <p className="text-[11px] text-cream/70">por persona</p>
           </div>
           <div className="absolute -left-4 bottom-12 h-[120px] w-[120px] rounded-full bg-cream shadow-[0_14px_30px_-14px_rgba(23,23,23,.4)] sm:-left-12">
@@ -444,7 +445,7 @@ function Booking({ course, sectionRef }: { course: Course; sectionRef: RefObject
                   <p className="text-[11px] font-semibold uppercase tracking-[.12em] text-terracotta">{course.instructor}</p>
                   <p className="display mt-1 text-xl leading-tight">{course.titleLead} <CourseTitle title={course.title} /></p>
                 </div>
-                <p className="shrink-0 text-right"><OfferBadge course={course} /><span className="display mt-1 block text-2xl"><WasPrice course={course} className="mr-2 text-base text-ink/45" />{formatPrice(course.priceCents)}</span><span className="text-[11px] text-ink/60">por persona</span></p>
+                <p className="shrink-0 text-right"><OfferBadge item={course} /><span className="display mt-1 block text-2xl"><WasPrice item={course} className="mr-2 text-base text-ink/45" />{formatPrice(course.priceCents)}</span><span className="text-[11px] text-ink/60">por persona</span></p>
               </div>
               <label><span className={labelClass}>Nombre y apellidos</span><input name="name" required minLength={2} autoComplete="name" className={inputClass} /></label>
               <div className="grid gap-5 sm:grid-cols-2">
@@ -481,18 +482,6 @@ function Booking({ course, sectionRef }: { course: Course; sectionRef: RefObject
   );
 }
 
-// Previous price, struck through; renders nothing when the course has no active offer.
-function WasPrice({ course, className = "" }: { course: Course; className?: string }) {
-  if (!course.listPriceCents) return null;
-  return <s className={`font-normal decoration-1 ${className}`}><span className="sr-only">Antes </span>{formatPrice(course.listPriceCents)}<span className="sr-only">, ahora</span></s>;
-}
-
-function OfferBadge({ course }: { course: Course }) {
-  const percent = discountPercent(course);
-  if (!percent) return null;
-  return <span className="inline-block rounded-full bg-terracotta px-2 py-0.5 text-[10px] font-bold tracking-[.08em] text-white">-{percent}%</span>;
-}
-
 // Shown on small screens once the hero is behind, hidden again as soon as the booking form comes into view.
 function MobileBookingBar({ course, bookingRef }: { course: Course; bookingRef: RefObject<HTMLElement | null> }) {
   const [visible, setVisible] = useState(false);
@@ -509,7 +498,7 @@ function MobileBookingBar({ course, bookingRef }: { course: Course; bookingRef: 
   return (
     <motion.div initial={false} animate={{ y: visible ? 0 : "110%" }} transition={{ duration: 0.35, ease: EASE }} className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-4 border-t border-ink/10 bg-cream/95 px-5 pb-[max(.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md lg:hidden" aria-hidden={!visible}>
       <div className="leading-tight">
-        <p className="display text-xl"><WasPrice course={course} className="mr-1.5 text-sm text-ink/45" />{formatPrice(course.priceCents)} <span className="font-sans text-xs text-ink/55">/ persona</span></p>
+        <p className="display text-xl"><WasPrice item={course} className="mr-1.5 text-sm text-ink/45" />{formatPrice(course.priceCents)} <span className="font-sans text-xs text-ink/55">/ persona</span></p>
         <p className="text-[11px] uppercase tracking-[.1em] text-ink/55">{course.theoryHours + course.practiceHours} h · <CourseTitle title={course.title} /></p>
       </div>
       <a href="#reserva" tabIndex={visible ? 0 : -1} className="btn btn-primary min-h-[44px] px-5">Reservar <ArrowRight size={14} aria-hidden="true" /></a>

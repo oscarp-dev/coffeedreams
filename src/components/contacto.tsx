@@ -8,6 +8,7 @@ import { Footer, NavigationHeader } from "@/components/site";
 import { Reveal } from "@/components/ui/reveal";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { CONTACT_EMAIL, PHONE_DISPLAY, PHONE_NUMBER, whatsappLink } from "@/lib/contact";
+import { formatPrice, latteArtCourse } from "@/lib/courses";
 
 const channels = [
   { icon: MessageCircle, label: "WhatsApp", value: "Respuesta rápida", href: whatsappLink("Hola, me gustaría hablar con Coffee Dreams."), external: true },
@@ -24,7 +25,7 @@ const nextSteps = [
 
 const shortcuts = [
   { eyebrow: "Tarifas y consultoría", title: "Servicios", text: "Creamos, analizamos y formamos. Consulta tarifas y pide presupuesto.", href: "/servicios", image: "/images/interior-recursos.jpg" },
-  { eyebrow: "Café & Latte Art", title: "Formación", text: "4 horas con Barista Richy: del grano al vertido. Reserva tu plaza.", href: "/formacion", image: "/images/richy-formacion.jpg" },
+  { eyebrow: "Café & Latte Art", title: "Formación", text: `4 horas con Barista Richy: del grano al vertido. Reserva tu plaza${latteArtCourse.listPriceCents ? ` en oferta por ${formatPrice(latteArtCourse.priceCents)} (antes ${formatPrice(latteArtCourse.listPriceCents)})` : ""}.`, href: "/formacion", image: "/images/richy-formacion.jpg" },
 ];
 
 export function ContactoPage() {

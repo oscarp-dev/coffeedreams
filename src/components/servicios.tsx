@@ -10,8 +10,9 @@ import { Magnetic } from "@/components/ui/magnetic";
 import { Reveal } from "@/components/ui/reveal";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { CONTACT_EMAIL, whatsappLink } from "@/lib/contact";
-import { formatPrice } from "@/lib/courses";
-import { composeQuote, MAX_PEOPLE, quoteEstimate, type QuoteRequest } from "@/lib/quote-request";
+import { OfferBadge, WasPrice } from "@/components/ui/offer-price";
+import { formatPrice, latteArtCourse } from "@/lib/courses";
+import { composeQuote, isInfoRequest, MAX_PEOPLE, quoteEstimate, type QuoteRequest } from "@/lib/quote-request";
 import { serviceCategories, serviceConditions, services, type Service, type ServiceCategory } from "@/lib/services";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -119,7 +120,7 @@ function PillarTabs({ onRequest }: { onRequest: () => void }) {
               </ol>
               <div className="mt-auto flex flex-wrap items-center gap-6 pt-9">
                 {pillar.title === "Formamos"
-                  ? <Link href="/formacion" className="btn btn-primary">Ver la formación <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" /></Link>
+                  ? <Link href="/formacion" className="btn btn-primary">Ver la formación <span className="h-3.5 w-px bg-white/35" aria-hidden="true" /><WasPrice item={latteArtCourse} className="text-white/60" />{formatPrice(latteArtCourse.priceCents)}<ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" /></Link>
                   : <button type="button" onClick={onRequest} className="btn btn-primary">Cuéntanos tu proyecto <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" /></button>}
               </div>
             </motion.div>
@@ -145,11 +146,23 @@ function ServiceCard({ service, onRequest }: { service: Service; onRequest: (id:
         <h3 className="text-lg font-semibold leading-snug">{service.name}</h3>
         <p className="mb-6 mt-2 text-sm leading-6 text-ink/60">{service.description}</p>
         <div className="mt-auto flex flex-wrap items-end justify-between gap-4 border-t border-ink/10 pt-5">
-          <p><span className="display text-3xl">{formatPrice(service.priceCents)}</span> <span className="text-xs text-ink/60">{priceUnit(service)} + IVA</span></p>
-          <div className="flex items-center gap-4">
-            {service.href && <Link href={service.href} className="text-[11px] font-semibold uppercase tracking-[.12em] text-olive underline-offset-4 hover:underline">Ver detalle</Link>}
-            <button type="button" onClick={() => onRequest(service.id)} className="group inline-flex items-center gap-2 rounded-full border border-ink/15 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[.12em] transition-colors hover:border-terracotta hover:bg-terracotta hover:text-white">Solicitar <ArrowRight size={13} className="transition-transform duration-300 group-hover:translate-x-0.5" /></button>
-          </div>
+          {isInfoRequest(service) ? (
+            <>
+              <p><OfferBadge item={service} className="mb-1.5 block w-fit" /><WasPrice item={service} className="mr-2 text-lg text-ink/45" /><span className="display text-3xl">{formatPrice(service.priceCents)}</span> <span className="text-xs text-ink/60">{priceUnit(service)}</span></p>
+              <div className="flex items-center gap-4">
+                <button type="button" onClick={() => onRequest(service.id)} className="text-[11px] font-semibold uppercase tracking-[.12em] text-olive underline-offset-4 hover:underline">Info empresas</button>
+                <Link href={service.href ?? "/formacion"} className="group inline-flex items-center gap-2 rounded-full bg-terracotta px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[.12em] text-white transition-colors hover:bg-olive-deep">Reservar plaza <ArrowRight size={13} className="transition-transform duration-300 group-hover:translate-x-0.5" /></Link>
+              </div>
+            </>
+          ) : (
+            <>
+              <p><span className="display text-3xl">{formatPrice(service.priceCents)}</span> <span className="text-xs text-ink/60">{priceUnit(service)} + IVA</span></p>
+              <div className="flex items-center gap-4">
+                {service.href && <Link href={service.href} className="text-[11px] font-semibold uppercase tracking-[.12em] text-olive underline-offset-4 hover:underline">Ver detalle</Link>}
+                <button type="button" onClick={() => onRequest(service.id)} className="group inline-flex items-center gap-2 rounded-full border border-ink/15 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[.12em] transition-colors hover:border-terracotta hover:bg-terracotta hover:text-white">Solicitar <ArrowRight size={13} className="transition-transform duration-300 group-hover:translate-x-0.5" /></button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </article>
@@ -212,7 +225,7 @@ function Rates({ onRequest }: { onRequest: (id: string) => void }) {
                   <tr key={service.id} className="border-t border-ink/8 transition-colors hover:bg-sand/25">
                     <td className="px-6 py-5 font-semibold">{service.name}<span className="mt-1 block text-xs font-normal text-ink/60 sm:hidden">{service.duration}</span></td>
                     <td className="hidden px-6 py-5 text-ink/65 sm:table-cell">{service.duration}</td>
-                    <td className="whitespace-nowrap px-6 py-5"><span className="font-semibold">{formatPrice(service.priceCents)}</span> <span className="text-xs text-ink/60">{service.perPerson ? "/ persona" : ""}</span></td>
+                    <td className="whitespace-nowrap px-6 py-5"><WasPrice item={service} className="mr-1.5 text-xs text-ink/45" /><span className="font-semibold">{formatPrice(service.priceCents)}</span> <span className="text-xs text-ink/60">{service.perPerson ? "/ persona" : ""}</span></td>
                     <td className="px-6 py-5 text-right"><button type="button" onClick={() => onRequest(service.id)} aria-label={`Solicitar ${service.name}`} className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-ink/15 transition-colors hover:border-terracotta hover:bg-terracotta hover:text-white"><ArrowRight size={14} /></button></td>
                   </tr>
                 ))}
@@ -269,6 +282,7 @@ function QuoteBuilder({ serviceId, setServiceId }: { serviceId: string; setServi
   const [people, setPeople] = useState(1);
   const service = services.find((s) => s.id === serviceId) ?? services[0];
   const estimate = quoteEstimate(service, people);
+  const info = isInfoRequest(service);
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [error, setError] = useState("");
   const [sentName, setSentName] = useState("");
@@ -310,6 +324,17 @@ function QuoteBuilder({ serviceId, setServiceId }: { serviceId: string; setServi
           <p className="eyebrow text-sand">Presupuesto</p>
           <h2 className="display mt-4 text-4xl leading-tight sm:text-5xl">Cuéntanos qué necesitas.</h2>
           <p className="mt-5 max-w-[420px] text-sm leading-7 text-cream/65">Elige el servicio, calcula una estimación al momento y envíanos tu solicitud. Te respondemos personalmente con el presupuesto final.</p>
+          {info ? (
+          <div className="mt-9 rounded-2xl border border-cream/15 bg-cream/[.04] p-6">
+            <p className="text-[11px] font-semibold uppercase tracking-[.12em] text-sand">Para empresas y equipos</p>
+            <p className="mt-2 text-sm text-cream/80">{service.name}</p>
+            <p className="mt-4 border-t border-cream/15 pt-4 text-sm leading-6 text-cream/75">Adaptamos la formación a tu equipo, en tu local o en el nuestro. Envíanos tus datos y te mandamos la información y una propuesta.</p>
+            <Link href={service.href ?? "/formacion"} className="group mt-5 flex items-center justify-between gap-4 rounded-xl bg-cream/[.07] px-4 py-3 transition-colors hover:bg-cream/[.12]">
+              <span className="text-xs leading-5 text-cream/75">¿Vienes por tu cuenta?<span className="block font-semibold text-cream">Reserva tu plaza online</span></span>
+              <span className="flex shrink-0 items-center gap-2"><OfferBadge item={service} /><WasPrice item={service} className="text-xs text-cream/50" /><span className="display text-2xl">{formatPrice(service.priceCents)}</span><ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" /></span>
+            </Link>
+          </div>
+          ) : (
           <div className="mt-9 rounded-2xl border border-cream/15 bg-cream/[.04] p-6">
             <p className="text-[11px] font-semibold uppercase tracking-[.12em] text-sand">Tu estimación</p>
             <p className="mt-2 text-sm text-cream/80">{service.name}</p>
@@ -323,6 +348,7 @@ function QuoteBuilder({ serviceId, setServiceId }: { serviceId: string; setServi
             </div>
             <p className="mt-3 text-xs leading-5 text-cream/65">+ IVA. Desplazamiento y alojamiento, si son necesarios, se presupuestan aparte.</p>
           </div>
+          )}
         </Reveal>
 
         <Reveal index={1} className="rounded-3xl bg-cream p-6 text-ink shadow-[0_40px_80px_-40px_rgba(0,0,0,.6)] sm:p-9">
@@ -330,7 +356,7 @@ function QuoteBuilder({ serviceId, setServiceId }: { serviceId: string; setServi
             <div className="py-10 text-center" role="status">
               <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-terracotta text-white"><Check size={28} aria-hidden="true" /></span>
               <h3 className="display mt-6 text-3xl">¡Solicitud enviada!</h3>
-              <p className="mx-auto mt-3 max-w-[340px] text-sm leading-6 text-ink/65">Gracias, {sentName}. Revisaremos tu solicitud y te responderemos personalmente con el presupuesto final.</p>
+              <p className="mx-auto mt-3 max-w-[340px] text-sm leading-6 text-ink/65">Gracias, {sentName}. {info ? "Te enviaremos la información y una propuesta para tu equipo." : "Revisaremos tu solicitud y te responderemos personalmente con el presupuesto final."}</p>
               <button type="button" onClick={() => setStatus("idle")} className="mt-8 rounded-full border border-ink/15 px-6 py-3 text-[11px] font-semibold uppercase tracking-[.12em] transition-colors hover:border-terracotta hover:text-terracotta">Pedir otro presupuesto</button>
             </div>
           ) : (
@@ -346,7 +372,7 @@ function QuoteBuilder({ serviceId, setServiceId }: { serviceId: string; setServi
                       <input type="radio" name="service" value={option.id} checked={selected} onChange={() => setServiceId(option.id)} className="sr-only" />
                       <span className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${selected ? "border-terracotta bg-terracotta text-white" : "border-ink/25"}`}>{selected && <Check size={10} aria-hidden="true" />}</span>
                       <span className="flex-1 text-sm font-medium leading-snug">{option.name}</span>
-                      <span className="shrink-0 text-xs text-ink/55">{formatPrice(option.priceCents)}{option.perPerson ? "/p" : ""}</span>
+                      <span className="shrink-0 text-xs text-ink/55">{isInfoRequest(option) ? "Info empresas" : `${formatPrice(option.priceCents)}${option.perPerson ? "/p" : ""}`}</span>
                     </label>
                   );
                 })}
@@ -376,7 +402,7 @@ function QuoteBuilder({ serviceId, setServiceId }: { serviceId: string; setServi
               <button type="submit" value="whatsapp" className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#25D366] px-5 py-4 text-xs font-semibold uppercase tracking-[.1em] text-white transition hover:brightness-95"><MessageCircle size={16} aria-hidden="true" />Enviar por WhatsApp</button>
               <button type="submit" value="email" disabled={status === "sending"} className="inline-flex items-center justify-center gap-2 rounded-lg bg-terracotta px-5 py-4 text-xs font-semibold uppercase tracking-[.1em] text-white transition-colors hover:bg-olive-deep disabled:opacity-70">{status === "sending" ? <><Loader2 size={16} className="animate-spin" aria-hidden="true" />Enviando…</> : <><Mail size={16} aria-hidden="true" />Enviar por email</>}</button>
             </div>
-            <p className="text-center text-xs leading-5 text-ink/60">La estimación es orientativa. Te confirmaremos el presupuesto final.</p>
+            <p className="text-center text-xs leading-5 text-ink/60">{info ? "Sin compromiso. Te responderemos personalmente." : "La estimación es orientativa. Te confirmaremos el presupuesto final."}</p>
           </form>
           )}
         </Reveal>
