@@ -13,6 +13,8 @@ export type Course = {
   theoryHours: number;
   practiceHours: number;
   priceCents: number;
+  // Price before the current offer, shown struck through next to `priceCents`.
+  listPriceCents?: number;
   currency: "EUR";
   maxSeatsPerBooking: number;
   modules: CourseModule[];
@@ -31,7 +33,8 @@ export const latteArtCourse: Course = {
   summary: "Una formación teórico-práctica pensada para quienes quieren iniciarse en el mundo del café, comprender los fundamentos del trabajo de barista y adquirir una base sólida en espresso, leche y Latte Art.",
   theoryHours: 1,
   practiceHours: 3,
-  priceCents: 12000,
+  priceCents: 8000,
+  listPriceCents: 12000,
   currency: "EUR",
   maxSeatsPerBooking: 4,
   modules: [
@@ -57,6 +60,10 @@ const courses: Record<string, Course> = { [latteArtCourse.id]: latteArtCourse };
 
 export function getCourse(id: string): Course | undefined {
   return courses[id];
+}
+
+export function discountPercent(course: Course) {
+  return course.listPriceCents ? Math.round((1 - course.priceCents / course.listPriceCents) * 100) : 0;
 }
 
 export function formatPrice(cents: number, currency: Course["currency"] = "EUR") {
