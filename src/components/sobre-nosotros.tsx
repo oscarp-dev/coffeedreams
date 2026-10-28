@@ -23,10 +23,12 @@ function SobreNosotrosHero() {
         <div>
           <p className="eyebrow rise-in flex items-center gap-3 text-terracotta"><span className="h-px w-8 bg-terracotta" aria-hidden="true" />Sobre nosotros</p>
           <h1 className="display rise-in rise-delay-1 mt-7 text-[46px] leading-[1.02] tracking-[-.02em] sm:text-[64px] lg:text-[72px]">Café, criterio y <em className="text-terracotta">ganas de hacerlo bien.</em></h1>
-          <p className="rise-in rise-delay-2 mt-7 max-w-[500px] text-[14px] leading-7 text-ink/70">Somos un equipo pequeño con mucha barra a la espalda. Acompañamos a quienes quieren abrir, mejorar o hacer crecer su cafetería, y nos implicamos en los detalles porque ahí vive la diferencia.</p>
+          <p className="rise-in rise-delay-2 mt-7 max-w-[500px] text-[14px] leading-7 text-ink/70">Conocemos el café desde dentro y el negocio desde los números. Acompañamos a quienes quieren abrir, mejorar o hacer crecer su cafetería, y nos implicamos en los detalles porque ahí vive la diferencia.</p>
         </div>
-        {/* The photo is a tall portrait; the team sits in its lower half. */}
-        <RevealImage src="/images/richie.jpg" alt="El equipo de Coffee Dreams formando a baristas en la barra de una cafetería" sizes="(min-width: 1024px) 40vw, 100vw" index={1} className="aspect-square overflow-hidden rounded-[24px] shadow-[0_30px_60px_-30px_rgba(46,31,22,.55)] sm:aspect-[4/5] [&_img]:object-[center_64%]" />
+        <div className="relative">
+          <RevealImage src="/images/proyectos/fini-inauguracion.jpg" alt="Inauguración de Fini Coffee & Bakery, un proyecto acompañado por Coffee Dreams" sizes="(min-width: 1024px) 40vw, 100vw" index={1} className="aspect-[4/5] overflow-hidden rounded-[24px] shadow-[0_30px_60px_-30px_rgba(46,31,22,.55)] [&_img]:object-[center_40%]" />
+          <span className="absolute bottom-4 left-4 rounded-full bg-cream/90 px-3.5 py-1.5 text-[9px] font-semibold uppercase tracking-[.14em] text-ink backdrop-blur-sm">Inauguración de Fini</span>
+        </div>
       </div>
     </section>
   );
