@@ -7,12 +7,12 @@ import { ContactForm } from "@/components/contact-drawer";
 import { Footer, NavigationHeader } from "@/components/site";
 import { Reveal } from "@/components/ui/reveal";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
-import { CONTACT_EMAIL, whatsappLink } from "@/lib/contact";
+import { CONTACT_EMAIL, PHONE_DISPLAY, PHONE_LINK, whatsappLink } from "@/lib/contact";
 
 const channels = [
   { icon: MessageCircle, label: "WhatsApp", value: "Respuesta rápida", href: whatsappLink("Hola, me gustaría hablar con Coffee Dreams."), external: true },
   { icon: Mail, label: "Email", value: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}` },
-  { icon: Phone, label: "Teléfono", value: "+34 961 234 567", href: "tel:+34961234567" },
+  { icon: Phone, label: "Teléfono", value: PHONE_DISPLAY, href: PHONE_LINK },
   { icon: MapPin, label: "Ubicación", value: "Alicante, España" },
 ];
 

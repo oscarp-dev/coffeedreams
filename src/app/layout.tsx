@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Montserrat, Playfair_Display } from "next/font/google";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -13,8 +14,10 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Coffee Dreams Consulting | Estrategia para negocios de café",
   description: "Creamos, analizamos y formamos para negocios de café.",
+  openGraph: { siteName: SITE_NAME, locale: "es_ES", type: "website" },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowRight, Check, Loader2, Mail, MessageCircle, Phone, X } from "lucide-react";
-import { CONTACT_EMAIL, whatsappLink } from "@/lib/contact";
+import { CONTACT_EMAIL, PHONE_LINK, whatsappLink } from "@/lib/contact";
 import { contactPreferences, contactTopics, type ContactRequest } from "@/lib/contact-request";
 
 type Topic = ContactRequest["topic"];
@@ -117,7 +117,7 @@ export function DirectContacts() {
     <div className="flex flex-wrap gap-2">
       <a href={whatsappLink("Hola, me gustaría hablar con Coffee Dreams.")} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-[#25D366]/50 px-4 py-2 text-xs font-semibold text-[#128C4B] transition-colors hover:bg-[#25D366] hover:text-white"><MessageCircle size={14} aria-hidden="true" />WhatsApp</a>
       <a href={`mailto:${CONTACT_EMAIL}`} className="inline-flex items-center gap-2 rounded-full border border-ink/15 px-4 py-2 text-xs font-semibold text-ink/70 transition-colors hover:border-terracotta hover:text-terracotta"><Mail size={14} aria-hidden="true" />{CONTACT_EMAIL}</a>
-      <a href="tel:+34961234567" className="inline-flex items-center gap-2 rounded-full border border-ink/15 px-4 py-2 text-xs font-semibold text-ink/70 transition-colors hover:border-terracotta hover:text-terracotta"><Phone size={14} aria-hidden="true" />Llamar</a>
+      <a href={PHONE_LINK} className="inline-flex items-center gap-2 rounded-full border border-ink/15 px-4 py-2 text-xs font-semibold text-ink/70 transition-colors hover:border-terracotta hover:text-terracotta"><Phone size={14} aria-hidden="true" />Llamar</a>
     </div>
   );
 }
