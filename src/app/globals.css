@@ -7,7 +7,9 @@
   --font-sans: var(--font-montserrat); --font-display: var(--font-playfair);
 }
 * { box-sizing: border-box; }
-html { overflow-x: hidden; scroll-behavior: smooth; }
+/* --header-h: height of the sticky header once scrolled; anchors land just below it. */
+:root { --header-h: 62px; }
+html { overflow-x: hidden; scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 12px); }
 main { overflow-x: clip; }
 .stat-icon + p + p, main > section:nth-child(5) p.mt-2 { font-size: 10px; }
 

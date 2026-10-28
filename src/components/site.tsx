@@ -29,31 +29,6 @@ function useScrolled(threshold = 8) {
   return scrolled;
 }
 
-// Hides the header while scrolling down and brings it back on any upward scroll.
-function useHeaderScroll(threshold = 8) {
-  const [state, setState] = useState({ scrolled: false, hidden: false });
-  useEffect(() => {
-    let lastY = window.scrollY;
-    const onScroll = () => {
-      const y = window.scrollY;
-      const delta = y - lastY;
-      setState((prev) => {
-        const scrolled = y > threshold;
-        let hidden = prev.hidden;
-        if (y < 120) hidden = false;
-        else if (delta > 6) hidden = true;
-        else if (delta < -6) hidden = false;
-        return scrolled === prev.scrolled && hidden === prev.hidden ? prev : { scrolled, hidden };
-      });
-      if (Math.abs(delta) > 6 || y < 120) lastY = y;
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [threshold]);
-  return state;
-}
-
 const nav = [["Inicio", "/", true], ["Servicios", "/servicios", true], ["Proyectos", "/proyectos", true], ["Formación", "/formacion", true], ["Sobre nosotros", "/sobre-nosotros", true], ["Contacto", "/contacto", true]] as const;
 export const pillars = [
   { title: "Creamos", label: "Damos vida a tu proyecto", icon: Sparkles, image: "/images/pillar-creamos.jpg", href: "/servicios#consultoria", bullets: ["Concepto y viabilidad", "Diseño e identidad", "Carta y experiencia", "Operaciones y proveedores", "Apertura y acompañamiento"] },
@@ -68,8 +43,9 @@ function HablemosButton() {
 
 function HeaderShell({ desktopNav }: { desktopNav: ReactNode }) {
   const [open, setOpen] = useState(false);
-  const { scrolled, hidden } = useHeaderScroll();
-  return <><header className={`sticky top-0 z-50 border-b border-black/5 bg-cream/95 backdrop-blur-md transition-[translate,box-shadow] duration-300 ease-out focus-within:translate-y-0 ${scrolled ? "shadow-[0_2px_20px_rgba(23,23,23,.06)]" : ""} ${hidden && !open ? "-translate-y-full" : ""}`}><div className={`mx-auto flex max-w-[1320px] items-center justify-between px-6 transition-[height] duration-300 lg:px-10 ${scrolled ? "h-[62px]" : "h-[76px]"}`}><Link href="/" className="flex items-center gap-3 leading-none" onClick={() => setOpen(false)}><BrandMark className="text-terracotta" size={34} /><span><span className="display block text-[22px]">Coffee Dreams<sup className="text-[8px]">®</sup></span><span className="ml-8 text-[10px] tracking-[.12em]">Consulting</span></span></Link>{desktopNav}<HablemosButton /><button type="button" className="lg:hidden" onClick={() => setOpen(!open)} aria-label={open ? "Cerrar menú" : "Abrir menú"}>{open ? <X size={22} /> : <Menu size={22} />}</button></div>{open && <nav className="border-t border-black/5 bg-cream px-6 py-5 lg:hidden">{nav.map(([label, href, enabled]) => enabled ? <Link key={href} href={href} onClick={() => setOpen(false)} className="block border-b border-black/10 py-3 text-xs font-semibold uppercase tracking-[.12em] text-olive">{label}</Link> : <button key={href} type="button" className="block w-full border-b border-black/10 py-3 text-left text-xs font-semibold uppercase tracking-[.12em] text-ink/35 transition-colors hover:text-olive focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-terracotta">{label}</button>)}<button type="button" onClick={() => { setOpen(false); openContact(); }} className="mt-5 flex w-full items-center justify-center gap-2 rounded-sm bg-terracotta py-3.5 text-xs font-semibold uppercase tracking-[.12em] text-white">Hablemos <ArrowRight size={14} /></button></nav>}</header><ContactDrawer /></>;
+  const scrolled = useScrolled();
+  // Stays pinned while scrolling and shrinks to 62px (see --header-h in globals.css).
+  return <><header className={`sticky top-0 z-50 border-b border-black/5 bg-cream/95 backdrop-blur-md transition-shadow duration-300 ease-out ${scrolled ? "shadow-[0_2px_20px_rgba(23,23,23,.06)]" : ""}`}><div className={`mx-auto flex max-w-[1320px] items-center justify-between px-6 transition-[height] duration-300 lg:px-10 ${scrolled ? "h-[62px]" : "h-[76px]"}`}><Link href="/" className="flex items-center gap-3 leading-none" onClick={() => setOpen(false)}><BrandMark className="text-terracotta" size={34} /><span><span className="display block text-[22px]">Coffee Dreams<sup className="text-[8px]">®</sup></span><span className="ml-8 text-[10px] tracking-[.12em]">Consulting</span></span></Link>{desktopNav}<HablemosButton /><button type="button" className="lg:hidden" onClick={() => setOpen(!open)} aria-label={open ? "Cerrar menú" : "Abrir menú"}>{open ? <X size={22} /> : <Menu size={22} />}</button></div>{open && <nav className="border-t border-black/5 bg-cream px-6 py-5 lg:hidden">{nav.map(([label, href, enabled]) => enabled ? <Link key={href} href={href} onClick={() => setOpen(false)} className="block border-b border-black/10 py-3 text-xs font-semibold uppercase tracking-[.12em] text-olive">{label}</Link> : <button key={href} type="button" className="block w-full border-b border-black/10 py-3 text-left text-xs font-semibold uppercase tracking-[.12em] text-ink/35 transition-colors hover:text-olive focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-terracotta">{label}</button>)}<button type="button" onClick={() => { setOpen(false); openContact(); }} className="mt-5 flex w-full items-center justify-center gap-2 rounded-sm bg-terracotta py-3.5 text-xs font-semibold uppercase tracking-[.12em] text-white">Hablemos <ArrowRight size={14} /></button></nav>}</header><ContactDrawer /></>;
 }
 
 function SiteHeader() {
