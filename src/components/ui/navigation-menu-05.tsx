@@ -18,7 +18,7 @@ const navigationMenuItems: { title: string; href?: string; icon: LucideIcon }[] 
   { title: "Servicios", href: "/servicios", icon: BriefcaseBusiness },
   { title: "Proyectos", href: "/proyectos", icon: FileText },
   { title: "Formación", href: "/formacion", icon: GraduationCap },
-  { title: "Sobre nosotros", icon: BookOpen },
+  { title: "Sobre nosotros", href: "/sobre-nosotros", icon: BookOpen },
   { title: "Contacto", href: "/contacto", icon: Mail },
 ];
 
