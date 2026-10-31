@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from "motion/react";
-import { Award, ArrowRight, BarChart3, BriefcaseBusiness, Camera, Check, Coffee, Compass, Leaf, Mail, MapPin, Menu, MessageCircle, PenLine, Phone, Sparkles, Users, X } from "lucide-react";
+import { Award, ArrowRight, BarChart3, Camera, Check, Coffee, Compass, Leaf, Mail, MapPin, Menu, MessageCircle, PenLine, Phone, Sparkles, Users, X } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { ContactDrawer, openContact } from "@/components/contact-drawer";
 import NavigationMenuWithActiveItem, { navigationMenuItems } from "@/components/ui/navigation-menu-05";
@@ -32,31 +32,6 @@ function useScrolled(threshold = 8) {
   return scrolled;
 }
 
-// Hides the header while scrolling down and brings it back on any upward scroll.
-function useHeaderScroll(threshold = 8) {
-  const [state, setState] = useState({ scrolled: false, hidden: false });
-  useEffect(() => {
-    let lastY = window.scrollY;
-    const onScroll = () => {
-      const y = window.scrollY;
-      const delta = y - lastY;
-      setState((prev) => {
-        const scrolled = y > threshold;
-        let hidden = prev.hidden;
-        if (y < 120) hidden = false;
-        else if (delta > 6) hidden = true;
-        else if (delta < -6) hidden = false;
-        return scrolled === prev.scrolled && hidden === prev.hidden ? prev : { scrolled, hidden };
-      });
-      if (Math.abs(delta) > 6 || y < 120) lastY = y;
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [threshold]);
-  return state;
-}
-
 export const pillars = [
   { title: "Creamos", label: "Damos vida a tu proyecto", icon: Sparkles, image: "/images/pillar-creamos.jpg", href: "/servicios#consultoria", bullets: ["Concepto y viabilidad", "Diseño e identidad", "Carta y experiencia", "Operaciones y proveedores", "Apertura y acompañamiento"] },
   { title: "Analizamos", label: "Mejoramos tu negocio actual", icon: BarChart3, image: "/images/pillar-analizamos.jpg", href: "/servicios#consultoria", bullets: ["Auditoría integral", "Análisis de producto y carta", "Costes y rentabilidad", "Procesos y eficiencia", "Experiencia del cliente"] },
@@ -78,7 +53,7 @@ function Logo({ onClick }: { onClick?: () => void }) {
 export function NavigationHeader() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const { scrolled, hidden } = useHeaderScroll();
+  const scrolled = useScrolled();
   useEffect(() => {
     if (!open) return;
     const onKeyDown = (event: KeyboardEvent) => { if (event.key === "Escape") setOpen(false); };
@@ -87,7 +62,8 @@ export function NavigationHeader() {
   }, [open]);
   return (
     <>
-      <header className={`sticky top-0 z-50 border-b transition-[translate,box-shadow,background-color,border-color] duration-300 ease-out focus-within:translate-y-0 ${scrolled || open ? "border-ink/8 bg-cream/90 shadow-[0_2px_24px_rgba(23,23,23,.06)] backdrop-blur-md" : "border-transparent bg-cream"} ${hidden && !open ? "-translate-y-full" : ""}`}>
+      {/* Stays pinned while scrolling and shrinks to 64px (see --header-h in globals.css). */}
+      <header className={`sticky top-0 z-50 border-b transition-[box-shadow,background-color,border-color] duration-300 ease-out ${scrolled || open ? "border-ink/8 bg-cream/90 shadow-[0_2px_24px_rgba(23,23,23,.06)] backdrop-blur-md" : "border-transparent bg-cream"}`}>
         <div className={`container-x flex items-center justify-between gap-6 transition-[height] duration-300 ${scrolled ? "h-[64px]" : "h-[80px]"}`}>
           <Logo onClick={() => setOpen(false)} />
           <div className="hidden lg:block"><NavigationMenuWithActiveItem /></div>
@@ -208,7 +184,7 @@ function Pillars() {
   );
 }
 
-const stats: [number, string, string, string, LucideIcon][] = [[15, "+", "", "Años de experiencia", Award], [60, "+", "", "Proyectos realizados", BarChart3], [200, "+", "", "Profesionales formados", Users], [100, "", "%", "Comprometidos", Coffee]];
+export const stats: [number, string, string, string, LucideIcon][] = [[15, "+", "", "Años de experiencia", Award], [60, "+", "", "Proyectos realizados", BarChart3], [200, "+", "", "Profesionales formados", Users], [100, "", "%", "Comprometidos", Coffee]];
 
 function Stats() {
   return (
@@ -342,7 +318,7 @@ export function ClosingCta({ title = "¿Tienes un proyecto de café en mente?", 
   );
 }
 
-const socialIcons = { Instagram: Camera, LinkedIn: BriefcaseBusiness };
+const socialIcons = { Instagram: Camera };
 
 export function Footer() {
   const socials = SOCIAL_LINKS.filter((s) => s.href);

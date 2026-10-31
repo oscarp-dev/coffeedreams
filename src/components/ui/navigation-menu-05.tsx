@@ -16,6 +16,7 @@ export const navigationMenuItems = [
   { title: "Servicios", href: "/servicios" },
   { title: "Proyectos", href: "/proyectos" },
   { title: "Formación", href: "/formacion" },
+  { title: "Sobre nosotros", href: "/sobre-nosotros" },
   { title: "Contacto", href: "/contacto" },
 ];
 

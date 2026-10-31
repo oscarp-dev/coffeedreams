@@ -179,7 +179,8 @@ function Curriculum({ course }: { course: Course }) {
   const distanceMV = useMotionValue(0);
   const [distance, setDistance] = useState(0);
   const [current, setCurrent] = useState(0);
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end end"] });
+  // The viewport pins just below the always-visible header, so progress starts when the section reaches it.
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start 64px", "end end"] });
   const { scrollXProgress } = useScroll({ container: scrollerRef });
   const x = useTransform(() => -scrollYProgress.get() * distanceMV.get());
   const total = course.modules.length;
@@ -246,8 +247,8 @@ function Curriculum({ course }: { course: Course }) {
   const snapEdge = "scroll-pl-[max(1.5rem,calc((100%-1240px)/2+1.5rem))] lg:scroll-pl-[max(2.5rem,calc((100%-1240px)/2+2.5rem))]";
 
   return (
-    <section id="contenido" ref={sectionRef} className="relative bg-cream" style={pinned ? { height: `calc(100svh + ${distance}px)` } : undefined}>
-      <div ref={viewportRef} className={`flex flex-col gap-7 overflow-hidden lg:gap-10 ${pinned ? "sticky top-0 h-svh justify-center py-8" : "py-16"}`}>
+    <section id="contenido" ref={sectionRef} className="relative bg-cream" style={pinned ? { height: `calc(100svh - var(--header-h) + ${distance}px)` } : undefined}>
+      <div ref={viewportRef} className={`flex flex-col gap-7 overflow-hidden lg:gap-10 ${pinned ? "sticky top-[var(--header-h)] h-[calc(100svh-var(--header-h))] justify-center py-8" : "py-16"}`}>
         <div className="mx-auto w-full max-w-[1240px] px-6 lg:px-10">
           <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
             <div>

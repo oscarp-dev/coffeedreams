@@ -8,7 +8,9 @@
   --font-sans: var(--font-montserrat); --font-display: var(--font-playfair);
 }
 * { box-sizing: border-box; }
-html { overflow-x: hidden; scroll-behavior: smooth; scroll-padding-top: 88px; -webkit-text-size-adjust: 100%; }
+/* --header-h: height of the sticky header once scrolled; anchors land just below it. */
+:root { --header-h: 64px; }
+html { overflow-x: hidden; scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 12px); -webkit-text-size-adjust: 100%; }
 main { overflow-x: clip; }
 
 body {

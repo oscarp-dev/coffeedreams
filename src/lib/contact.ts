@@ -5,10 +5,8 @@ export const CONTACT_EMAIL = "coffeedreamsconsulting@gmail.com";
 export const LOCATION = "Alicante, España";
 
 // Only profiles with a URL are shown in the footer.
-// TODO: add the client's real Instagram / LinkedIn profiles.
-export const SOCIAL_LINKS: { label: "Instagram" | "LinkedIn"; href: string }[] = [
-  { label: "Instagram", href: "" },
-  { label: "LinkedIn", href: "" },
+export const SOCIAL_LINKS: { label: "Instagram"; href: string }[] = [
+  { label: "Instagram", href: "https://www.instagram.com/coffeedream.cafe/" },
 ];
 
 export function whatsappLink(message: string) {
