@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { ArrowRight, Check, Clock } from "lucide-react";
 import { Footer, NavigationHeader } from "@/components/site";
 import { bookingFromMetadata } from "@/lib/checkout";
@@ -7,7 +8,8 @@ import { formatPrice, getCourse } from "@/lib/courses";
 import { getStripe } from "@/lib/stripe";
 
 // Return page for Stripe Checkout's success_url (?session_id=cs_...). It reads the session to show
-// what was paid; the confirmation email itself is sent from the webhook.
+// what was paid; the confirmation email itself is sent from the webhook. Without a real session
+// (no or unknown session_id) there is nothing to confirm, so it sends the visitor back to /formacion.
 export const metadata: Metadata = {
   title: "Reserva confirmada | Coffee Dreams Consulting",
   robots: { index: false },
@@ -21,6 +23,7 @@ async function loadSession(sessionId: unknown) {
 
 export default async function Confirmacion({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const session = await loadSession((await searchParams).session_id);
+  if (!session) redirect("/formacion");
   const booking = session ? bookingFromMetadata(session.metadata) : null;
   const course = booking ? getCourse(booking.courseId) : undefined;
   const paid = session?.payment_status === "paid";
@@ -30,8 +33,8 @@ export default async function Confirmacion({ searchParams }: { searchParams: Pro
       <NavigationHeader />
       <main className="flex min-h-[70vh] items-center justify-center bg-cream px-6 py-20">
         <div className="max-w-[480px] text-center">
-          <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-terracotta text-white">{paid || !session ? <Check size={28} aria-hidden="true" /> : <Clock size={28} aria-hidden="true" />}</span>
-          {session && !paid ? (
+          <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-terracotta text-white">{paid ? <Check size={28} aria-hidden="true" /> : <Clock size={28} aria-hidden="true" />}</span>
+          {!paid ? (
             <>
               <p className="eyebrow mt-8 text-terracotta">Pago en proceso</p>
               <h1 className="display mt-4 text-4xl leading-tight sm:text-5xl">Ya casi está.</h1>
@@ -44,7 +47,7 @@ export default async function Confirmacion({ searchParams }: { searchParams: Pro
               <p className="mt-5 text-sm leading-7 text-ink/65">Tu pago se ha completado correctamente. Te hemos enviado un email con la confirmación y todos los detalles de la formación. Si no lo ves, revisa la carpeta de spam.</p>
             </>
           )}
-          {booking && course && session && (
+          {booking && course && (
             <dl className="mx-auto mt-8 grid max-w-[320px] grid-cols-[auto_1fr] gap-x-6 gap-y-2 border-y border-ink/10 py-5 text-left text-sm">
               <dt className="text-ink/55">Formación</dt><dd className="text-right font-medium">{course.title}</dd>
               <dt className="text-ink/55">Plazas</dt><dd className="text-right font-medium">{booking.seats}</dd>
