@@ -56,7 +56,10 @@ export const latteArtCourse: Course = {
   closing: "Una base práctica para empezar a trabajar el café con técnica, criterio y confianza.",
 };
 
-const courses: Record<string, Course> = { [latteArtCourse.id]: latteArtCourse };
+// Hidden 1 € copy used to test live payments end to end; not linked from any page. Remove after testing.
+const livePaymentTest: Course = { ...latteArtCourse, id: "prueba-pago", titleLead: "Prueba de pago ·", priceCents: 100, listPriceCents: undefined, maxSeatsPerBooking: 1 };
+
+const courses: Record<string, Course> = { [latteArtCourse.id]: latteArtCourse, [livePaymentTest.id]: livePaymentTest };
 
 export function getCourse(id: string): Course | undefined {
   return courses[id];
