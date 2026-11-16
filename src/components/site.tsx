@@ -34,9 +34,9 @@ function useScrolled(threshold = 8) {
 }
 
 export const pillars = [
-  { title: "Creamos", label: "Damos vida a tu proyecto", icon: Sparkles, image: "/images/pillar-creamos.jpg", href: "/servicios#consultoria", bullets: ["Concepto y viabilidad", "Diseño e identidad", "Carta y experiencia", "Operaciones y proveedores", "Apertura y acompañamiento"] },
-  { title: "Analizamos", label: "Mejoramos tu negocio actual", icon: BarChart3, image: "/images/pillar-analizamos.jpg", href: "/servicios#consultoria", bullets: ["Auditoría integral", "Análisis de producto y carta", "Costes y rentabilidad", "Procesos y eficiencia", "Experiencia del cliente"] },
-  { title: "Formamos", label: "Desarrollamos tu equipo", icon: Users, image: "/images/pillar-formamos.jpg", href: "/formacion", bullets: ["Barista & Espresso", "Latte Art", "Métodos de filtrado", "Atención al cliente", "Formación a medida"] },
+  { title: "Creamos", label: "Damos vida a tu proyecto", icon: Sparkles, image: "/images/cafes-barra.jpg", imagePosition: "object-[center_70%]", href: "/servicios#consultoria", bullets: ["Concepto y viabilidad", "Diseño e identidad", "Carta y experiencia", "Operaciones y proveedores", "Apertura y acompañamiento"] },
+  { title: "Analizamos", label: "Mejoramos tu negocio actual", icon: BarChart3, image: "/images/richy-cata-2.jpg", imagePosition: "object-[center_40%]", href: "/servicios#consultoria", bullets: ["Auditoría integral", "Análisis de producto y carta", "Costes y rentabilidad", "Procesos y eficiencia", "Experiencia del cliente"] },
+  { title: "Formamos", label: "Desarrollamos tu equipo", icon: Users, image: "/images/richy-latte-art.jpg", imagePosition: "object-[center_45%]", href: "/formacion", bullets: ["Barista & Espresso", "Latte Art", "Métodos de filtrado", "Atención al cliente", "Formación a medida"] },
 ];
 export const steps = [["01", "Escuchamos", "Entendemos tu idea, tus necesidades y tus objetivos.", MessageCircle], ["02", "Analizamos", "Estudiamos el mercado, los números y el potencial.", Compass], ["03", "Diseñamos", "Creamos la estrategia, concepto y plan de acción.", PenLine], ["04", "Implementamos", "Te acompañamos en la puesta en marcha con nuestro equipo.", Coffee], ["05", "Mejoramos", "Medimos, optimizamos y crecemos juntos.", BarChart3]] as const;
 
@@ -156,11 +156,11 @@ function Pillars() {
       <div className="container-x">
         <SectionHeading eyebrow="Lo que hacemos" title="Tres formas de hacer crecer tu café." aside="Estrategia, creatividad y oficio para construir negocios con alma." />
         <div className="mt-12 grid gap-5 md:grid-cols-3">
-          {pillars.map(({ title, label, icon: Icon, bullets, image, href }, index) => (
+          {pillars.map(({ title, label, icon: Icon, bullets, image, imagePosition, href }, index) => (
             <Reveal key={title} index={index} className="h-full">
               <Link href={href} className="group flex h-full flex-col rounded-[28px] border border-ink/8 bg-paper p-3 transition-[box-shadow,border-color] duration-500 hover:border-terracotta/30 hover:shadow-[0_30px_60px_-36px_rgba(46,31,22,.55)]">
                 <div className="relative aspect-[4/3] overflow-hidden rounded-[20px]">
-                  <Image src={image} alt="" fill sizes="(min-width: 768px) 30vw, 100vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <Image src={image} alt="" fill sizes="(min-width: 768px) 30vw, 100vw" className={`object-cover transition-transform duration-700 group-hover:scale-105 ${imagePosition}`} />
                   <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink/35 to-transparent" />
                   <span className="absolute left-4 top-4 flex h-12 w-12 items-center justify-center rounded-full bg-cream text-olive shadow-sm"><Icon size={22} aria-hidden="true" /></span>
                   <span className="display absolute bottom-3 right-5 text-5xl text-cream/85" aria-hidden="true">0{index + 1}</span>

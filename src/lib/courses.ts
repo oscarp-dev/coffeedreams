@@ -4,7 +4,7 @@ export type CoursePhase = { name: string; modules: number[] };
 export type Course = {
   id: string;
   instructor: string;
-  // Photo of the instructor teaching (upright, cropped copy of public/images/richie.jpg).
+  // Portrait photo of the instructor, shown in the "Tu formador" section.
   instructorPhoto: string;
   titleLead: string;
   title: string;
@@ -26,7 +26,7 @@ export type Course = {
 export const latteArtCourse: Course = {
   id: "inicios-cafe-latte-art",
   instructor: "Barista Richy",
-  instructorPhoto: "/images/richy-formacion.jpg",
+  instructorPhoto: "/images/richy-latte-art.jpg",
   titleLead: "Inicios al mundo del",
   title: "Café & Latte Art",
   tagline: "Del grano al espresso, de la leche al vertido",

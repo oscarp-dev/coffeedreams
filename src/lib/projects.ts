@@ -48,6 +48,15 @@ export const projects: Project[] = [
     },
   },
   {
+    id: "latte-art",
+    name: "Latte Art",
+    tagline: "by Barista Richy",
+    brand: brands.latteArt,
+    category: "apertura", // TODO: confirm the type of project, city and copy with the client.
+    image: "/images/proyectos/latte-art-inauguracion.jpg",
+    imagePosition: "object-[center_60%]",
+  },
+  {
     id: "honey",
     name: "Honey",
     tagline: "Coffee & Brunch",

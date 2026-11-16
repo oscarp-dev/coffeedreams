@@ -37,7 +37,7 @@ export const services: Service[] = [
     perPerson: true,
     bookableOnline: true,
     description: "Del grano al vertido: espresso, leche y Latte Art en una formación teórico-práctica.",
-    image: "/images/latteart.jpg",
+    image: "/images/richy-cata.jpg",
     href: "/formacion",
   },
   {
@@ -48,7 +48,7 @@ export const services: Service[] = [
     priceCents: 12000,
     perPerson: true,
     description: "Para equipos de sala y barra: atención, protocolos de servicio y experiencia del cliente.",
-    image: "/images/pillar-analizamos.jpg",
+    image: "/images/honey-carta.jpg",
   },
   {
     id: "ferias-eventos",
@@ -58,7 +58,7 @@ export const services: Service[] = [
     priceCents: 15000,
     perPerson: false,
     description: "Servicio de café profesional para tu stand, feria o evento.",
-    image: "/images/interior-contacto.jpg",
+    image: "/images/evento-barra.jpg",
   },
   {
     id: "live-latte-art",
@@ -68,7 +68,7 @@ export const services: Service[] = [
     priceCents: 8000,
     perPerson: false,
     description: "Latte Art en directo: una demostración que sorprende y reúne a tu público.",
-    image: "/images/pillar-creamos.jpg",
+    image: "/images/richy-latte-art.jpg",
   },
 ];
 

@@ -312,7 +312,7 @@ function Instructor({ course }: { course: Course }) {
         <Reveal className="relative mx-auto w-full max-w-[460px] md:mx-0">
           <div className="relative aspect-[4/5] overflow-hidden rounded-[28px] shadow-[0_30px_60px_-30px_rgba(46,31,22,.55)]">
             <motion.div className="absolute inset-x-0 -inset-y-[7%]" style={reduceMotion ? undefined : { y: imageY }}>
-              <Image src={course.instructorPhoto} alt={`${course.instructor} explicando a dos alumnas en la barra`} fill sizes="(min-width: 768px) 460px, 100vw" className="object-cover object-[center_35%]" />
+              <Image src={course.instructorPhoto} alt={`${course.instructor} vertiendo un Latte Art`} fill sizes="(min-width: 768px) 460px, 100vw" className="object-cover" />
             </motion.div>
             <span className="absolute left-4 top-4 flex items-center gap-2 rounded-full bg-cream/90 px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[.14em] text-ink backdrop-blur-sm"><span className="relative flex h-1.5 w-1.5" aria-hidden="true"><span className="absolute inset-0 animate-ping rounded-full bg-terracotta" /><span className="relative h-1.5 w-1.5 rounded-full bg-terracotta" /></span>En plena formación</span>
           </div>
