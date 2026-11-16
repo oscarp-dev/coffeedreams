@@ -80,25 +80,25 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
   return (
     <article className="group">
       <TiltCard className="aspect-[4/5] overflow-hidden rounded-[20px] shadow-[0_18px_40px_-28px_rgba(46,31,22,.5)] transition-shadow duration-500 group-hover:shadow-[0_30px_60px_-28px_rgba(46,31,22,.6)]">
-        <ProjectVisual project={project} sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw" hover />
+        <ProjectVisual project={project} sizes="(min-width: 1024px) 25vw, 50vw" hover />
         <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/25 via-45% to-transparent transition-opacity duration-500 group-hover:opacity-95" />
-        <div className="absolute inset-x-0 top-0 flex items-start justify-between p-5">
-          <span className="rounded-2xl bg-cream/95 px-4 py-2.5 shadow-sm backdrop-blur-sm"><BrandLogo project={project} height={32} className="h-7 mix-blend-multiply" /></span>
-          <span aria-hidden="true" className="display text-lg text-cream/70 transition-colors duration-300 group-hover:text-cream">{String(index + 1).padStart(2, "0")}</span>
+        <div className="absolute inset-x-0 top-0 flex items-start justify-between p-3 sm:p-4">
+          <span className="rounded-xl bg-cream/95 px-2.5 py-1.5 shadow-sm backdrop-blur-sm sm:rounded-2xl sm:px-3.5 sm:py-2"><BrandLogo project={project} height={32} className="h-5 mix-blend-multiply sm:h-6" /></span>
+          <span aria-hidden="true" className="display text-sm sm:text-lg text-cream/70 transition-colors duration-300 group-hover:text-cream">{String(index + 1).padStart(2, "0")}</span>
         </div>
-        <div className="absolute inset-x-0 bottom-0 p-6 text-cream">
+        <div className="absolute inset-x-0 bottom-0 p-3.5 text-cream sm:p-5">
           {project.result && <div className="mb-5 inline-block rounded-2xl bg-cream/15 px-4 py-3 backdrop-blur-sm">
             <p className="display text-2xl leading-none">{project.result.value}</p>
             <p className="mt-1 text-[11px] text-cream/75">{project.result.label}</p>
           </div>}
-          <p className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[.12em]">
-            <span className="rounded-full bg-cream/15 px-3 py-1 backdrop-blur-sm transition-colors duration-300 group-hover:bg-terracotta">{categoryLabel[project.category]}</span>
+          <p className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[9px] font-semibold uppercase tracking-[.12em] sm:text-[11px]">
+            <span className="rounded-full bg-cream/15 px-2.5 py-1 backdrop-blur-sm transition-colors duration-300 group-hover:bg-terracotta">{categoryLabel[project.category]}</span>
             {project.city && <span className="flex items-center gap-1 text-cream/80"><MapPin size={12} aria-hidden="true" />{project.city}</span>}
           </p>
-          <h3 className="display mt-4 text-4xl leading-none transition-transform duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:translate-x-1.5">{project.name}</h3>
-          {project.tagline && <p className="mt-2 text-xs font-semibold uppercase tracking-[.14em] text-cream/65">{project.tagline}</p>}
-          {project.summary && <p className="mt-3 max-w-[440px] text-sm leading-6 text-cream/80">{project.summary}</p>}
-          <span aria-hidden="true" className="mt-5 block h-px origin-left scale-x-0 bg-terracotta transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-x-100" />
+          <h3 className="display mt-3 text-2xl leading-none sm:mt-4 sm:text-3xl xl:text-4xl transition-transform duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:translate-x-1.5">{project.name}</h3>
+          {project.tagline && <p className="mt-2 text-[9px] font-semibold uppercase tracking-[.14em] text-cream/65 sm:text-xs">{project.tagline}</p>}
+          {project.summary && <p className="mt-3 hidden max-w-[440px] text-sm leading-6 text-cream/80 sm:block">{project.summary}</p>}
+          <span aria-hidden="true" className="mt-3 block h-px origin-left sm:mt-5 scale-x-0 bg-terracotta transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-x-100" />
         </div>
       </TiltCard>
     </article>
@@ -121,7 +121,7 @@ function ProjectGrid() {
           </div>}
         </div>
         <LayoutGroup>
-          <motion.div layout={!reduceMotion} className="mt-12 grid gap-x-10 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+          <motion.div layout={!reduceMotion} className="mt-12 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
             <AnimatePresence mode="popLayout" initial={false}>
               {visible.map((project, i) => (
                 <motion.div key={project.id} layout={!reduceMotion} initial={reduceMotion ? false : { opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={reduceMotion ? undefined : { opacity: 0, scale: 0.97 }} transition={{ duration: 0.45, ease: EASE }}>

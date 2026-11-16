@@ -19,9 +19,8 @@ export default function Condiciones() {
 
       <LegalSection title="Cómo se reserva">
         <ul>
-          <li>En la página de la formación eliges el número de plazas, indicas tus datos y pasas a la pasarela de pago segura de Stripe.</li>
-          <li>La reserva queda confirmada cuando se completa el pago. En ese momento te enviamos un email de confirmación con el resumen de tu compra.</li>
-          <li>Después nos pondremos en contacto contigo para acordar la fecha y los detalles de la sesión.</li>
+          <li>En la página de la formación eliges la fecha de la sesión y el número de plazas, indicas tus datos y pasas a la pasarela de pago segura de Stripe.</li>
+          <li>La reserva queda confirmada cuando se completa el pago. En ese momento te enviamos un email de confirmación con la fecha, el horario, el lugar y el resumen de tu compra.</li>
         </ul>
       </LegalSection>
 
@@ -37,9 +36,9 @@ export default function Condiciones() {
       </LegalSection>
 
       <LegalSection title="Cancelaciones y cambios de fecha">
-        <p>Una vez pasado el plazo de desistimiento, o si ya hemos fijado la fecha de tu sesión:</p>
+        <p>Una vez pasado el plazo de desistimiento:</p>
         <ul>
-          <li>Si cancelas con <strong>{CANCELLATION_DAYS} días o más</strong> de antelación a la fecha acordada, te devolvemos el importe íntegro.</li>
+          <li>Si cancelas con <strong>{CANCELLATION_DAYS} días o más</strong> de antelación a la fecha de tu sesión, te devolvemos el importe íntegro.</li>
           <li>Si cancelas con menos de {CANCELLATION_DAYS} días de antelación, no hay reembolso, pero puedes cambiar la sesión a otra fecha una vez o ceder tu plaza a otra persona avisándonos antes.</li>
           <li>Si no te presentas a la sesión sin avisar, no se devuelve el importe.</li>
         </ul>

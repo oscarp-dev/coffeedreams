@@ -1,5 +1,7 @@
 export type CourseModule = { title: string; topics: string[] };
 export type CoursePhase = { name: string; modules: number[] };
+// A dated group session. `id` is the session date (YYYY-MM-DD); start/end carry the Madrid offset.
+export type CourseSession = { id: string; start: string; end: string };
 
 export type Course = {
   id: string;
@@ -17,6 +19,8 @@ export type Course = {
   listPriceCents?: number;
   currency: "EUR";
   maxSeatsPerBooking: number;
+  location: string;
+  sessions: CourseSession[];
   modules: CourseModule[];
   phases: CoursePhase[];
   motto: string[];
@@ -37,6 +41,12 @@ export const latteArtCourse: Course = {
   listPriceCents: 12000,
   currency: "EUR",
   maxSeatsPerBooking: 4,
+  location: "Glorieta Poeta Vicente Mojica, 6, Alicante",
+  sessions: [
+    { id: "2026-11-30", start: "2026-11-30T16:00:00+01:00", end: "2026-11-30T20:00:00+01:00" },
+    { id: "2026-12-14", start: "2026-12-14T16:00:00+01:00", end: "2026-12-14T20:00:00+01:00" },
+    { id: "2026-12-28", start: "2026-12-28T16:00:00+01:00", end: "2026-12-28T20:00:00+01:00" },
+  ],
   modules: [
     { title: "Introducción al mundo del café", topics: ["Arábica y Robusta", "Características y diferencias"] },
     { title: "Del origen a la taza", topics: ["Recolección", "Anatomía del fruto", "Beneficiado húmedo y seco", "Procesos", "Tueste", "Descafeinado"] },
@@ -60,6 +70,32 @@ const courses: Record<string, Course> = { [latteArtCourse.id]: latteArtCourse };
 
 export function getCourse(id: string): Course | undefined {
   return courses[id];
+}
+
+export function getSession(course: Course, sessionId: string): CourseSession | undefined {
+  return course.sessions.find((s) => s.id === sessionId);
+}
+
+// Sessions can be booked until they start.
+export function isBookable(session: CourseSession, now = Date.now()) {
+  return new Date(session.start).getTime() > now;
+}
+
+export function upcomingSessions(course: Course, now = Date.now()) {
+  return course.sessions.filter((s) => isBookable(s, now));
+}
+
+const TIME_ZONE = "Europe/Madrid";
+
+// "lunes, 30 de noviembre"
+export function formatSessionDate(session: CourseSession) {
+  return new Intl.DateTimeFormat("es-ES", { weekday: "long", day: "numeric", month: "long", timeZone: TIME_ZONE }).format(new Date(session.start));
+}
+
+// "16:00 – 20:00"
+export function formatSessionTime(session: CourseSession) {
+  const time = new Intl.DateTimeFormat("es-ES", { hour: "2-digit", minute: "2-digit", timeZone: TIME_ZONE });
+  return `${time.format(new Date(session.start))} – ${time.format(new Date(session.end))}`;
 }
 
 export type Priced = { priceCents: number; listPriceCents?: number };

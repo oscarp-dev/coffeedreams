@@ -3,14 +3,14 @@
 import Image from "next/image";
 import { Fragment, useEffect, useRef, useState, useSyncExternalStore, type FormEvent, type RefObject } from "react";
 import { AnimatePresence, motion, useMotionValue, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from "motion/react";
-import { ArrowDown, ArrowRight, BookOpen, Check, ChevronLeft, ChevronRight, Clock, Coffee, GraduationCap, Hand, Loader2, Lock, Mail, MessageCircle, Minus, Plus, ShieldCheck } from "lucide-react";
+import { ArrowDown, ArrowRight, BookOpen, CalendarDays, Check, ChevronLeft, ChevronRight, Clock, Coffee, GraduationCap, Hand, Loader2, Lock, Mail, MapPin, MessageCircle, Minus, Plus, ShieldCheck } from "lucide-react";
 import { Footer, NavigationHeader } from "@/components/site";
 import { Magnetic } from "@/components/ui/magnetic";
 import { Reveal } from "@/components/ui/reveal";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { CONTACT_EMAIL, whatsappLink } from "@/lib/contact";
 import { OfferBadge, WasPrice } from "@/components/ui/offer-price";
-import { discountPercent, formatPrice, type Course } from "@/lib/courses";
+import { discountPercent, formatPrice, formatSessionDate, formatSessionTime, type Course, type CourseSession } from "@/lib/courses";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const pad = (n: number) => String(n).padStart(2, "0");
@@ -30,8 +30,9 @@ function CourseHero({ course }: { course: Course }) {
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "12%"]);
   const totalHours = course.theoryHours + course.practiceHours;
+  const nextSession = course.sessions[0];
   const facts = [
-    { icon: Clock, label: "Duración", value: `${totalHours} horas` },
+    nextSession ? { icon: CalendarDays, label: "Próxima fecha", value: `${formatSessionDate(nextSession).split(", ")[1]} · ${formatSessionTime(nextSession)}` } : { icon: Clock, label: "Duración", value: `${totalHours} horas` },
     { icon: BookOpen, label: "Metodología", value: `${course.theoryHours} h teoría + ${course.practiceHours} h práctica` },
     { icon: GraduationCap, label: "Imparte", value: course.instructor },
   ];
@@ -364,8 +365,8 @@ type Status = "idle" | "sending" | "unavailable" | "error";
 const inputClass = "w-full rounded-lg border border-ink/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-terracotta focus:ring-2 focus:ring-terracotta/20";
 const labelClass = "mb-1.5 block text-[11px] font-semibold uppercase tracking-[.12em] text-ink/60";
 
-function PaymentUnavailable({ course, contact, seats, onBack }: { course: Course; contact: Contact; seats: number; onBack: () => void }) {
-  const summary = `Hola, quiero reservar ${seats} ${seats === 1 ? "plaza" : "plazas"} para la formación "${course.titleLead} ${course.title}".\n\nNombre: ${contact.name}\nEmail: ${contact.email}\nTeléfono: ${contact.phone}`;
+function PaymentUnavailable({ course, session, contact, seats, onBack }: { course: Course; session?: CourseSession; contact: Contact; seats: number; onBack: () => void }) {
+  const summary = `Hola, quiero reservar ${seats} ${seats === 1 ? "plaza" : "plazas"} para la formación "${course.titleLead} ${course.title}"${session ? ` del ${formatSessionDate(session)} (${formatSessionTime(session)})` : ""}.\n\nNombre: ${contact.name}\nEmail: ${contact.email}\nTeléfono: ${contact.phone}`;
   return (
     <div className="text-center" role="status">
       <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-sand/60 text-olive"><Coffee size={24} aria-hidden="true" /></span>
@@ -380,8 +381,22 @@ function PaymentUnavailable({ course, contact, seats, onBack }: { course: Course
   );
 }
 
+function NoSessions({ course }: { course: Course }) {
+  const message = `Hola, me interesa la formación "${course.titleLead} ${course.title}". ¿Cuándo será la próxima fecha?`;
+  return (
+    <div className="text-center" role="status">
+      <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-sand/60 text-olive"><Clock size={24} aria-hidden="true" /></span>
+      <h3 className="display mt-5 text-2xl">Pronto anunciaremos nuevas fechas</h3>
+      <p className="mx-auto mt-3 max-w-[340px] text-sm leading-6 text-ink/65">Escríbenos y te avisamos en cuanto abramos el próximo grupo.</p>
+      <a href={whatsappLink(message)} target="_blank" rel="noopener noreferrer" className="mt-7 inline-flex items-center justify-center gap-2 rounded-lg bg-[#25D366] px-5 py-3.5 text-xs font-semibold uppercase tracking-[.1em] text-white transition hover:brightness-95"><MessageCircle size={16} aria-hidden="true" />Avísame por WhatsApp</a>
+    </div>
+  );
+}
+
 function Booking({ course, sectionRef }: { course: Course; sectionRef: RefObject<HTMLElement | null> }) {
   const [seats, setSeats] = useState(1);
+  const [sessionId, setSessionId] = useState(course.sessions[0]?.id ?? "");
+  const selectedSession = course.sessions.find((s) => s.id === sessionId);
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
   const [contact, setContact] = useState<Contact | null>(null);
@@ -390,6 +405,7 @@ function Booking({ course, sectionRef }: { course: Course; sectionRef: RefObject
     `${totalHours} horas de formación con ${course.instructor}`,
     `${course.theoryHours} h de teoría + ${course.practiceHours} h de práctica en barra`,
     `Los ${course.modules.length} módulos: del origen del café a las figuras de Latte Art`,
+    `Presencial en ${course.location}`,
     "Confirmación y todos los detalles por email tras el pago",
   ];
 
@@ -400,7 +416,7 @@ function Booking({ course, sectionRef }: { course: Course; sectionRef: RefObject
     setStatus("sending");
     setError("");
     try {
-      const response = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ courseId: course.id, seats, ...details }) });
+      const response = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ courseId: course.id, sessionId, seats, ...details }) });
       const result = await response.json().catch(() => ({}));
       if (response.ok && result.url) {
         window.location.assign(result.url);
@@ -438,7 +454,9 @@ function Booking({ course, sectionRef }: { course: Course; sectionRef: RefObject
 
         <Reveal index={1} className="rounded-3xl bg-cream p-6 text-ink shadow-[0_40px_80px_-40px_rgba(0,0,0,.6)] sm:p-9">
           {status === "unavailable" && contact ? (
-            <PaymentUnavailable course={course} contact={contact} seats={seats} onBack={() => setStatus("idle")} />
+            <PaymentUnavailable course={course} session={selectedSession} contact={contact} seats={seats} onBack={() => setStatus("idle")} />
+          ) : course.sessions.length === 0 ? (
+            <NoSessions course={course} />
           ) : (
             <form onSubmit={onSubmit} className="grid gap-5">
               <div className="flex items-start justify-between gap-4 border-b border-ink/10 pb-5">
@@ -448,6 +466,24 @@ function Booking({ course, sectionRef }: { course: Course; sectionRef: RefObject
                 </div>
                 <p className="shrink-0 text-right"><OfferBadge item={course} /><span className="display mt-1 block text-2xl"><WasPrice item={course} className="mr-2 text-base text-ink/45" />{formatPrice(course.priceCents)}</span><span className="text-[11px] text-ink/60">por persona</span></p>
               </div>
+              <fieldset>
+                <legend className={labelClass}>Elige la fecha</legend>
+                <div className="grid gap-2 sm:grid-cols-3">
+                  {course.sessions.map((session) => {
+                    const [weekday, date] = formatSessionDate(session).split(", ");
+                    const checked = session.id === sessionId;
+                    return (
+                      <label key={session.id} className={`cursor-pointer rounded-lg border px-3 py-2.5 text-center transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-terracotta/40 ${checked ? "border-terracotta bg-terracotta text-white" : "border-ink/15 bg-white hover:border-terracotta"}`}>
+                        <input type="radio" name="session" value={session.id} checked={checked} onChange={() => setSessionId(session.id)} className="sr-only" />
+                        <span className={`block text-[10px] font-semibold uppercase tracking-[.12em] ${checked ? "text-white/80" : "text-terracotta"}`}>{weekday}</span>
+                        <span className="block text-sm font-semibold">{date}</span>
+                        <span className={`block text-[11px] ${checked ? "text-white/80" : "text-ink/55"}`}>{formatSessionTime(session)}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+                <p className="mt-2 flex items-center gap-1.5 text-[11px] text-ink/55"><MapPin size={12} aria-hidden="true" />{course.location}</p>
+              </fieldset>
               <label><span className={labelClass}>Nombre y apellidos</span><input name="name" required minLength={2} autoComplete="name" className={inputClass} /></label>
               <div className="grid gap-5 sm:grid-cols-2">
                 <label><span className={labelClass}>Email</span><input name="email" type="email" required autoComplete="email" className={inputClass} /></label>

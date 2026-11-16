@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { ArrowRight, Check, Clock } from "lucide-react";
 import { Footer, NavigationHeader } from "@/components/site";
 import { bookingFromMetadata } from "@/lib/checkout";
-import { formatPrice, getCourse } from "@/lib/courses";
+import { formatPrice, formatSessionDate, formatSessionTime, getCourse, getSession } from "@/lib/courses";
 import { getStripe } from "@/lib/stripe";
 
 // Return page for Stripe Checkout's success_url (?session_id=cs_...). It reads the session to show
@@ -26,6 +26,7 @@ export default async function Confirmacion({ searchParams }: { searchParams: Pro
   if (!session) redirect("/formacion");
   const booking = session ? bookingFromMetadata(session.metadata) : null;
   const course = booking ? getCourse(booking.courseId) : undefined;
+  const courseSession = booking && course ? getSession(course, booking.sessionId) : undefined;
   const paid = session?.payment_status === "paid";
 
   return (
@@ -50,6 +51,9 @@ export default async function Confirmacion({ searchParams }: { searchParams: Pro
           {booking && course && (
             <dl className="mx-auto mt-8 grid max-w-[320px] grid-cols-[auto_1fr] gap-x-6 gap-y-2 border-y border-ink/10 py-5 text-left text-sm">
               <dt className="text-ink/55">Formación</dt><dd className="text-right font-medium">{course.title}</dd>
+              {courseSession && <><dt className="text-ink/55">Fecha</dt><dd className="text-right font-medium first-letter:uppercase">{formatSessionDate(courseSession)}</dd>
+              <dt className="text-ink/55">Horario</dt><dd className="text-right font-medium">{formatSessionTime(courseSession)}</dd>
+              <dt className="text-ink/55">Lugar</dt><dd className="text-right font-medium">{course.location}</dd></>}
               <dt className="text-ink/55">Plazas</dt><dd className="text-right font-medium">{booking.seats}</dd>
               <dt className="text-ink/55">Total</dt><dd className="text-right font-medium">{formatPrice(session.amount_total ?? course.priceCents * booking.seats, course.currency)}</dd>
             </dl>

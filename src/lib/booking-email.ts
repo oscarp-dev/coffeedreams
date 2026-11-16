@@ -1,5 +1,5 @@
 import type { Booking } from "@/lib/checkout";
-import { formatPrice, type Course } from "@/lib/courses";
+import { formatPrice, formatSessionDate, formatSessionTime, getSession, type Course } from "@/lib/courses";
 import { escapeHtml, sendEmail, TEST_SENDER } from "@/lib/email";
 
 function rowsTable(rows: [string, string][]) {
@@ -7,13 +7,15 @@ function rowsTable(rows: [string, string][]) {
 }
 
 function bookingRows(booking: Booking, course: Course, amountCents: number): [string, string][] {
-  return [["Formación", `${course.titleLead} ${course.title}`], ["Plazas", String(booking.seats)], ["Total pagado", formatPrice(amountCents, course.currency)]];
+  const session = getSession(course, booking.sessionId);
+  const when: [string, string][] = session ? [["Fecha", formatSessionDate(session)], ["Horario", formatSessionTime(session)]] : [];
+  return [["Formación", `${course.titleLead} ${course.title}`], ...when, ["Lugar", course.location], ["Plazas", String(booking.seats)], ["Total pagado", formatPrice(amountCents, course.currency)]];
 }
 
 function teamEmail(booking: Booking, course: Course, amountCents: number) {
   const rows: [string, string][] = [...bookingRows(booking, course, amountCents), ["Nombre", booking.name], ["Email", booking.email], ["Teléfono", booking.phone]];
   return {
-    subject: `Nueva reserva pagada: ${course.title} · ${booking.name} (${booking.seats} ${booking.seats === 1 ? "plaza" : "plazas"})`,
+    subject: `Nueva reserva pagada: ${course.title} (${booking.sessionId}) · ${booking.name} (${booking.seats} ${booking.seats === 1 ? "plaza" : "plazas"})`,
     text: rows.map(([label, value]) => `${label}: ${value}`).join("\n"),
     html: rowsTable(rows),
   };
@@ -22,8 +24,8 @@ function teamEmail(booking: Booking, course: Course, amountCents: number) {
 function customerEmail(booking: Booking, course: Course, amountCents: number) {
   const firstName = booking.name.split(" ")[0];
   const rows = bookingRows(booking, course, amountCents);
-  const text = `Hola ${firstName},\n\nTu reserva está confirmada y el pago se ha completado.\n\n${rows.map(([label, value]) => `${label}: ${value}`).join("\n")}\n\nTe escribiremos con la fecha y los detalles de la sesión. Si tienes cualquier duda, responde a este email.\n\nCoffee Dreams Consulting`;
-  const html = `<div style="font-family:sans-serif;font-size:14px;line-height:1.6"><p>Hola ${escapeHtml(firstName)},</p><p>Tu reserva está confirmada y el pago se ha completado.</p>${rowsTable(rows)}<p>Te escribiremos con la fecha y los detalles de la sesión. Si tienes cualquier duda, responde a este email.</p><p>Coffee Dreams Consulting</p></div>`;
+  const text = `Hola ${firstName},\n\nTu reserva está confirmada y el pago se ha completado.\n\n${rows.map(([label, value]) => `${label}: ${value}`).join("\n")}\n\nTe esperamos en la barra. Si tienes cualquier duda, responde a este email.\n\nCoffee Dreams Consulting`;
+  const html = `<div style="font-family:sans-serif;font-size:14px;line-height:1.6"><p>Hola ${escapeHtml(firstName)},</p><p>Tu reserva está confirmada y el pago se ha completado.</p>${rowsTable(rows)}<p>Te esperamos en la barra. Si tienes cualquier duda, responde a este email.</p><p>Coffee Dreams Consulting</p></div>`;
   return { subject: `Reserva confirmada · ${course.title}`, text, html };
 }
 
