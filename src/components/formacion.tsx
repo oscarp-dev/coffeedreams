@@ -80,7 +80,7 @@ function CourseHero({ course }: { course: Course }) {
         <div className="rise-in rise-delay-2 relative mx-auto w-full max-w-[430px] lg:mr-0">
           <div className="relative aspect-[4/5] overflow-hidden rounded-b-[28px] rounded-t-[999px] shadow-[0_30px_60px_-30px_rgba(46,31,22,.55)]">
             <motion.div className="absolute inset-x-0 -top-[12%] bottom-0" style={reduceMotion ? undefined : { y: imageY }}>
-              <Image src="/images/latteart.jpg" alt="Vertido de Latte Art" fill preload sizes="(min-width: 1024px) 430px, 90vw" className="object-cover" />
+              <Image src="/images/richy-cata.jpg" alt="Barista Richy catando varios cafés junto al molinillo" fill preload sizes="(min-width: 1024px) 430px, 90vw" className="object-cover object-[35%_center]" />
             </motion.div>
           </div>
           <div className="float-soft absolute -right-3 top-14 rounded-2xl bg-ink px-5 py-4 text-cream shadow-xl sm:-right-10">
