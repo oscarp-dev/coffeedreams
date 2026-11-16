@@ -19,6 +19,7 @@ import { OfferBadge, WasPrice } from "@/components/ui/offer-price";
 import { brands, logoWidth } from "@/lib/brands";
 import { formatPrice, latteArtCourse } from "@/lib/courses";
 import { CONTACT_EMAIL, LOCATION, PHONE_DISPLAY, PHONE_NUMBER, SOCIAL_LINKS, whatsappLink } from "@/lib/contact";
+import { legalLinks } from "@/lib/legal";
 import { projects } from "@/lib/projects";
 
 function useScrolled(threshold = 8) {
@@ -348,6 +349,7 @@ export function Footer() {
         </div>
         <div className="flex flex-col gap-2 py-6 text-xs text-cream/60 sm:flex-row sm:items-center sm:justify-between">
           <span>© {new Date().getFullYear()} Coffee Dreams Consulting</span>
+          <nav aria-label="Información legal" className="flex flex-wrap gap-x-5 gap-y-2">{legalLinks.map(({ title, href }) => <Link key={href} href={href} className={linkClass}>{title}</Link>)}</nav>
           <span className="uppercase tracking-[.14em] text-sand/80">Pasión por el café. Visión de negocio.</span>
         </div>
       </div>

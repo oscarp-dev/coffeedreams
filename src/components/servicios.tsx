@@ -397,6 +397,10 @@ function QuoteBuilder({ serviceId, setServiceId }: { serviceId: string; setServi
               <label><span className={labelClass}>Teléfono</span><input name="phone" type="tel" required pattern="\+?[\d\s\-]{7,20}" autoComplete="tel" className={inputClass} /></label>
             </div>
             <label><span className={labelClass}>Cuéntanos más (opcional)</span><textarea name="message" rows={3} maxLength={3000} className={inputClass} placeholder="Tipo de negocio, lugar, necesidades especiales…" /></label>
+            <label className="flex items-start gap-3 text-[13px] leading-6 text-ink/65">
+              <input type="checkbox" required className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--terracotta)]" />
+              <span>Acepto que Coffee Dreams use mis datos para preparar el presupuesto, según la <a href="/privacidad" target="_blank" className="underline underline-offset-2 hover:text-terracotta">política de privacidad</a>.</span>
+            </label>
             {status === "error" && <p className="rounded-lg bg-red-50 px-4 py-3 text-xs text-red-700" role="alert">{error}</p>}
             <div className="grid gap-3 sm:grid-cols-2">
               <button type="submit" value="whatsapp" className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#25D366] px-5 py-4 text-xs font-semibold uppercase tracking-[.1em] text-white transition hover:brightness-95"><MessageCircle size={16} aria-hidden="true" />Enviar por WhatsApp</button>

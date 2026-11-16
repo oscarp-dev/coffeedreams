@@ -102,7 +102,7 @@ export function ContactForm({ initialTopic, onClose, autoFocus = false }: { init
         <input type="text" name="company" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 opacity-0" />
         <label className="flex items-start gap-3 text-[13px] leading-6 text-ink/65">
           <input type="checkbox" required className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--terracotta)]" />
-          Acepto que Coffee Dreams use mis datos para responder a este mensaje.
+          <span>Acepto que Coffee Dreams use mis datos para responder a este mensaje, según la <a href="/privacidad" target="_blank" className="underline underline-offset-2 hover:text-terracotta">política de privacidad</a>.</span>
         </label>
         {status === "error" && <p className="rounded-lg bg-red-50 px-4 py-3 text-xs text-red-700" role="alert">{error}</p>}
         <button type="submit" disabled={status === "sending"} className="magnetic-btn group flex items-center justify-center gap-3 rounded-lg bg-terracotta px-6 py-4 text-xs font-semibold uppercase tracking-[.12em] text-white shadow-[0_12px_26px_-12px_var(--terracotta)] transition-colors hover:bg-olive-deep disabled:opacity-70">
